@@ -1,8 +1,9 @@
 """Web page routes — server-rendered HTML."""
+import json
 import pathlib
 
 import jinja2
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
@@ -69,3 +70,81 @@ def search_fragment(request: Request, q: str = "", db: Session = Depends(get_db)
                 "version": latest.version, "description": stack.description,
             })
     return templates.TemplateResponse(request, "_search_results.html", {"stacks": items, "query": q})
+
+
+@router.get("/stacks/{namespace}/{name}", response_class=HTMLResponse)
+def stack_detail_page(request: Request, namespace: str, name: str, db: Session = Depends(get_db)):
+    ns = db.query(Namespace).filter_by(name=namespace).first()
+    if not ns:
+        raise HTTPException(404, "Not found")
+    stack = db.query(Stack).filter_by(namespace_id=ns.id, name=name).first()
+    if not stack:
+        raise HTTPException(404, "Not found")
+    latest = db.query(StackVersion).filter_by(stack_id=stack.id)\
+        .order_by(StackVersion.published_at.desc()).first()
+    if not latest:
+        raise HTTPException(404, "Not found")
+    all_versions = db.query(StackVersion).filter_by(stack_id=stack.id)\
+        .order_by(StackVersion.published_at.desc()).all()
+    skills = json.loads(latest.skills)
+    profiles = json.loads(latest.profiles)
+    depends_on = json.loads(latest.depends_on)
+    deprecations = json.loads(latest.deprecations)
+    deprecated_skills = {d["skill"]: d["replacement"] for d in deprecations}
+    versions_data = [{"version": v.version, "digest": v.digest,
+                       "published_at": v.published_at.isoformat() if v.published_at else ""}
+                      for v in all_versions]
+    return templates.TemplateResponse(request, "stack_detail.html", {
+        "namespace": namespace, "stack": stack, "version": latest,
+        "skills": skills, "profiles": profiles, "depends_on": depends_on,
+        "deprecations": deprecations, "deprecated_skills": deprecated_skills,
+        "all_versions": versions_data,
+    })
+
+
+@router.get("/stacks/{namespace}/{name}/{version}", response_class=HTMLResponse)
+def stack_version_page(request: Request, namespace: str, name: str, version: str,
+                       db: Session = Depends(get_db)):
+    ns = db.query(Namespace).filter_by(name=namespace).first()
+    if not ns:
+        raise HTTPException(404, "Not found")
+    stack = db.query(Stack).filter_by(namespace_id=ns.id, name=name).first()
+    if not stack:
+        raise HTTPException(404, "Not found")
+    sv = db.query(StackVersion).filter_by(stack_id=stack.id, version=version).first()
+    if not sv:
+        raise HTTPException(404, "Not found")
+    all_versions = db.query(StackVersion).filter_by(stack_id=stack.id)\
+        .order_by(StackVersion.published_at.desc()).all()
+    skills = json.loads(sv.skills)
+    profiles = json.loads(sv.profiles)
+    depends_on = json.loads(sv.depends_on)
+    deprecations = json.loads(sv.deprecations)
+    deprecated_skills = {d["skill"]: d["replacement"] for d in deprecations}
+    versions_data = [{"version": v.version, "digest": v.digest,
+                       "published_at": v.published_at.isoformat() if v.published_at else ""}
+                      for v in all_versions]
+    return templates.TemplateResponse(request, "stack_detail.html", {
+        "namespace": namespace, "stack": stack, "version": sv,
+        "skills": skills, "profiles": profiles, "depends_on": depends_on,
+        "deprecations": deprecations, "deprecated_skills": deprecated_skills,
+        "all_versions": versions_data,
+    })
+
+
+@router.get("/{namespace}", response_class=HTMLResponse)
+def namespace_page(request: Request, namespace: str, db: Session = Depends(get_db)):
+    ns = db.query(Namespace).filter_by(name=namespace).first()
+    if not ns:
+        raise HTTPException(404, "Not found")
+    stacks = db.query(Stack).filter_by(namespace_id=ns.id).all()
+    items = []
+    for stack in stacks:
+        latest = db.query(StackVersion).filter_by(stack_id=stack.id)\
+            .order_by(StackVersion.published_at.desc()).first()
+        if latest:
+            items.append({
+                "namespace": ns.name, "name": stack.name,
+                "version": latest.version, "description": stack.description,
+            })
+    return templates.TemplateResponse(request, "namespace.html", {"ns": ns, "stacks": items})

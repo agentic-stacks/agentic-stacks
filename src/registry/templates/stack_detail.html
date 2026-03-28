@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}{{ namespace }}/{{ stack.name }} — Agentic Stacks{% endblock %}
+{% block content %}
+<div class="mb-8">
+    <div class="flex items-center gap-3 mb-2">
+        <a href="/{{ namespace }}" class="text-gray-400 hover:text-emerald-400">{{ namespace }}</a>
+        <span class="text-gray-600">/</span>
+        <h1 class="text-3xl font-bold">{{ stack.name }}</h1>
+        <span class="bg-emerald-900 text-emerald-300 text-sm px-2 py-1 rounded">v{{ version.version }}</span>
+    </div>
+    <p class="text-gray-400">{{ stack.description }}</p>
+</div>
+
+<div class="bg-gray-900 border border-gray-800 rounded-lg p-4 mb-8">
+    <p class="text-sm text-gray-500 mb-1">Install:</p>
+    <code class="text-emerald-400">agentic-stacks pull {{ namespace }}/{{ stack.name }}@{{ version.version }}</code>
+</div>
+
+<div class="border-b border-gray-800 mb-6 flex gap-6">
+    <button class="tab-active pb-2 text-sm font-medium" onclick="showTab('skills')">Skills</button>
+    <button class="pb-2 text-sm font-medium text-gray-500 hover:text-white" onclick="showTab('profiles')">Profiles</button>
+    <button class="pb-2 text-sm font-medium text-gray-500 hover:text-white" onclick="showTab('versions')">Versions</button>
+    <button class="pb-2 text-sm font-medium text-gray-500 hover:text-white" onclick="showTab('dependencies')">Dependencies</button>
+</div>
+
+<div id="tab-skills" class="tab-content">
+    {% if skills %}
+    <div class="space-y-3">
+        {% for skill in skills %}
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-4">
+            <h3 class="font-semibold text-white">{{ skill.name }}</h3>
+            <p class="text-sm text-gray-400">{{ skill.description }}</p>
+            {% if skill.name in deprecated_skills %}
+            <p class="text-sm text-yellow-500 mt-1">Deprecated — use "{{ deprecated_skills[skill.name] }}" instead</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-gray-500">No skills defined.</p>
+    {% endif %}
+</div>
+
+<div id="tab-profiles" class="tab-content hidden">
+    {% if profiles.get("categories") %}
+    <div class="space-y-2">
+        {% for category in profiles.categories %}
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-3">
+            <span class="text-white font-medium">{{ category }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-gray-500">No profiles defined.</p>
+    {% endif %}
+</div>
+
+<div id="tab-versions" class="tab-content hidden">
+    {% for v in all_versions %}
+    <div class="bg-gray-900 border border-gray-800 rounded-lg p-3 mb-2 flex justify-between items-center">
+        <div>
+            <a href="/stacks/{{ namespace }}/{{ stack.name }}/{{ v.version }}" class="text-emerald-400 hover:underline">v{{ v.version }}</a>
+            <span class="text-gray-500 text-sm ml-2">{{ v.published_at[:10] if v.published_at else "" }}</span>
+        </div>
+        <code class="text-xs text-gray-500">{{ v.digest[:20] }}...</code>
+    </div>
+    {% endfor %}
+</div>
+
+<div id="tab-dependencies" class="tab-content hidden">
+    {% if depends_on %}
+    <div class="space-y-2">
+        {% for dep in depends_on %}
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-3">
+            <span class="text-white">{{ dep.namespace }}/{{ dep.name }}</span>
+            <span class="text-gray-500 text-sm ml-2">{{ dep.version }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-gray-500">No dependencies.</p>
+    {% endif %}
+
+    {% if deprecations %}
+    <h3 class="text-lg font-semibold mt-6 mb-3 text-yellow-500">Deprecations</h3>
+    <div class="space-y-2">
+        {% for dep in deprecations %}
+        <div class="bg-gray-900 border border-yellow-900 rounded-lg p-3">
+            <span class="text-yellow-400">{{ dep.skill }}</span>
+            <span class="text-gray-500 text-sm"> — use "{{ dep.replacement }}" instead</span>
+            <p class="text-xs text-gray-500 mt-1">Since {{ dep.since }}, removal in {{ dep.removal }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function showTab(name) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+    document.getElementById('tab-' + name).classList.remove('hidden');
+    document.querySelectorAll('[onclick^="showTab"]').forEach(el => {
+        el.classList.remove('tab-active');
+        el.classList.add('text-gray-500');
+    });
+    event.target.classList.add('tab-active');
+    event.target.classList.remove('text-gray-500');
+}
+</script>
+{% endblock %}
