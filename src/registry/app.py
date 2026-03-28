@@ -46,7 +46,8 @@ def create_app(rate_limit: str | None = None, db_factory=None, enable_rate_limit
         except (ImportError, RuntimeError):
             pass  # Skip rate limiting if slowapi unavailable or threads not supported
 
-    app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+    if STATIC_DIR.exists():
+        app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
     app.include_router(stacks_router)
     app.include_router(namespaces_router)
