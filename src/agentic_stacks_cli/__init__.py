@@ -9,6 +9,7 @@ from agentic_stacks_cli.commands.validate import validate
 from agentic_stacks_cli.commands.login import login
 from agentic_stacks_cli.commands.publish import publish
 from agentic_stacks_cli.commands.pull import pull
+from agentic_stacks_cli.commands.search import search
 
 
 @click.group()
@@ -24,6 +25,7 @@ cli.add_command(validate)
 cli.add_command(login)
 cli.add_command(publish)
 cli.add_command(pull)
+cli.add_command(search)
 
 
 def main():
