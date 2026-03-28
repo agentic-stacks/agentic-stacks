@@ -1,0 +1,105 @@
+<h2>How Stacks Get Consumed</h2>
+<p class="subtitle">Two consumers: humans pulling stacks, and agents discovering them at runtime</p>
+
+<div class="section">
+  <div class="label">Human Consumption (Phase 1-2)</div>
+  <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 20px; margin-bottom: 16px;">
+    <div style="font-family: monospace; font-size: 13px; line-height: 2.2; background: rgba(0,0,0,0.3); border-radius: 6px; padding: 16px;">
+      <div style="color: #6ee7b7;">## Scaffold a new project using a stack</div>
+      <div><span style="color: #93c5fd;">$</span> as init --stack littleknifelabs/kubernetes@2.1</div>
+      <div style="opacity: 0.5;">  → creates project with profiles/, environments/, skills/ from stack</div>
+      <div style="opacity: 0.5;">  → writes stacks.lock pinning exact version + digest</div>
+      <div style="opacity: 0.5;">  → generates CLAUDE.md pointing agent at the skills</div>
+      <br>
+      <div style="color: #6ee7b7;">## Pull a stack into an existing project</div>
+      <div><span style="color: #93c5fd;">$</span> as pull littleknifelabs/openstack@1.3</div>
+      <div style="opacity: 0.5;">  → downloads stack to .stacks/littleknifelabs/openstack/1.3.0/</div>
+      <div style="opacity: 0.5;">  → updates stacks.lock</div>
+      <br>
+      <div style="color: #6ee7b7;">## Upgrade with deprecation warnings</div>
+      <div><span style="color: #93c5fd;">$</span> as upgrade openstack</div>
+      <div style="opacity: 0.5;">  → shows diff of what changed</div>
+      <div style="opacity: 0.5;">  → warns: "deploy-with-kubeadm deprecated in 2.1, use deploy-with-k3s"</div>
+      <div style="opacity: 0.5;">  → updates stacks.lock</div>
+      <br>
+      <div style="color: #6ee7b7;">## Check for issues</div>
+      <div><span style="color: #93c5fd;">$</span> as doctor</div>
+      <div style="opacity: 0.5;">  → validates stack.yaml, profiles, environment schemas</div>
+      <div style="opacity: 0.5;">  → checks for deprecated skills in use</div>
+      <div style="opacity: 0.5;">  → verifies dependency compatibility</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">Agent Consumption (Phase 3)</div>
+  <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 20px; margin-bottom: 16px;">
+    <div style="display: flex; gap: 16px;">
+      <div style="flex: 1;">
+        <h3 style="color: #fbbf24; margin-top: 0;">The MCP Server</h3>
+        <p style="font-size: 13px; line-height: 1.6;">An MCP server that any AI agent can connect to. Exposes the registry as tools the agent can call.</p>
+        <div style="font-family: monospace; font-size: 12px; line-height: 1.8; background: rgba(0,0,0,0.3); border-radius: 6px; padding: 12px; margin-top: 8px;">
+          <div style="color: #fbbf24;">// Tools the agent gets:</div>
+          <div><strong>search_stacks</strong>(<span style="opacity:0.6">query</span>)</div>
+          <div style="opacity: 0.5; margin-left: 16px;">"I need to deploy OpenStack"</div>
+          <div style="opacity: 0.5; margin-left: 16px;">→ ranked results with descriptions</div>
+          <br>
+          <div><strong>get_stack_info</strong>(<span style="opacity:0.6">name, version</span>)</div>
+          <div style="opacity: 0.5; margin-left: 16px;">→ manifest, skill list, profiles, deps</div>
+          <br>
+          <div><strong>get_skill</strong>(<span style="opacity:0.6">stack, skill_name</span>)</div>
+          <div style="opacity: 0.5; margin-left: 16px;">→ full skill content (markdown)</div>
+          <br>
+          <div><strong>pull_stack</strong>(<span style="opacity:0.6">name, version, path</span>)</div>
+          <div style="opacity: 0.5; margin-left: 16px;">→ downloads stack locally</div>
+        </div>
+      </div>
+      <div style="flex: 1;">
+        <h3 style="color: #fbbf24; margin-top: 0;">The Flow</h3>
+        <div style="font-size: 13px; line-height: 1.8;">
+          <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+            <div style="background: rgba(251,191,36,0.2); border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; color: #fbbf24;">1</div>
+            <div>Agent hits a task it doesn't know how to do<br><span style="opacity: 0.5;">"Deploy an OpenStack cloud"</span></div>
+          </div>
+          <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+            <div style="background: rgba(251,191,36,0.2); border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; color: #fbbf24;">2</div>
+            <div>Calls <code>search_stacks("openstack deployment")</code><br><span style="opacity: 0.5;">Gets back: littleknifelabs/openstack@2.1</span></div>
+          </div>
+          <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+            <div style="background: rgba(251,191,36,0.2); border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; color: #fbbf24;">3</div>
+            <div>Calls <code>get_stack_info</code> to evaluate<br><span style="opacity: 0.5;">Reads skills, profiles, requirements</span></div>
+          </div>
+          <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+            <div style="background: rgba(251,191,36,0.2); border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; color: #fbbf24;">4</div>
+            <div>Asks human: "I found an OpenStack stack. Install it?"<br><span style="opacity: 0.5;">Human approves (or auto-approve if trusted)</span></div>
+          </div>
+          <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+            <div style="background: rgba(251,191,36,0.2); border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; color: #fbbf24;">5</div>
+            <div>Calls <code>pull_stack</code>, loads skills into context<br><span style="opacity: 0.5;"><strong>"I know OpenStack."</strong></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">Trust Model</div>
+  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+    <div style="background: rgba(110,231,183,0.08); border: 1px solid rgba(110,231,183,0.2); border-radius: 8px; padding: 16px; text-align: center;">
+      <div style="font-size: 24px; margin-bottom: 8px;">&#9989;</div>
+      <h3 style="color: #6ee7b7; margin: 0 0 4px 0; font-size: 14px;">Verified</h3>
+      <p style="font-size: 12px; opacity: 0.7; margin: 0;">Signed by known publisher. Auto-pullable by agents with matching trust policy.</p>
+    </div>
+    <div style="background: rgba(147,197,253,0.08); border: 1px solid rgba(147,197,253,0.2); border-radius: 8px; padding: 16px; text-align: center;">
+      <div style="font-size: 24px; margin-bottom: 8px;">&#128101;</div>
+      <h3 style="color: #93c5fd; margin: 0 0 4px 0; font-size: 14px;">Community</h3>
+      <p style="font-size: 12px; opacity: 0.7; margin: 0;">Published by community. Agents require human approval before pulling.</p>
+    </div>
+    <div style="background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.2); border-radius: 8px; padding: 16px; text-align: center;">
+      <div style="font-size: 24px; margin-bottom: 8px;">&#128300;</div>
+      <h3 style="color: #fbbf24; margin: 0 0 4px 0; font-size: 14px;">Experimental</h3>
+      <p style="font-size: 12px; opacity: 0.7; margin: 0;">Unreviewed. Always requires explicit human approval. Flagged in UI.</p>
+    </div>
+  </div>
+</div>

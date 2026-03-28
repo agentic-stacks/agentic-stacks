@@ -1,0 +1,113 @@
+<h2>Where Agentic Stacks Fits</h2>
+<p class="subtitle">The landscape has protocol layers and tool registries, but nobody owns the "composed capability pack" layer</p>
+
+<div class="section">
+  <div class="label">Current Landscape</div>
+  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 16px;">
+      <h3 style="color: #6ee7b7; margin-top: 0;">Protocol Layer</h3>
+      <p style="font-size: 13px; opacity: 0.7;">How agents talk to tools</p>
+      <div style="font-size: 14px; line-height: 1.8;">
+        <div><strong>MCP</strong> — tool discovery & invocation</div>
+        <div><strong>A2A</strong> — agent-to-agent delegation</div>
+        <div><strong>OpenAPI</strong> — API schema description</div>
+      </div>
+      <div style="margin-top: 12px; padding: 8px; background: rgba(110, 231, 183, 0.1); border-radius: 4px; font-size: 12px;">
+        Status: Maturing, but fragmented
+      </div>
+    </div>
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 16px;">
+      <h3 style="color: #93c5fd; margin-top: 0;">Single-Tool Registries</h3>
+      <p style="font-size: 13px; opacity: 0.7;">Individual tools & servers</p>
+      <div style="font-size: 14px; line-height: 1.8;">
+        <div><strong>Smithery</strong> — MCP server directory</div>
+        <div><strong>mcp.run</strong> — WASM-sandboxed MCP</div>
+        <div><strong>Composio</strong> — hosted integrations</div>
+        <div><strong>GPT Store</strong> — closed ecosystem</div>
+      </div>
+      <div style="margin-top: 12px; padding: 8px; background: rgba(147, 197, 253, 0.1); border-radius: 4px; font-size: 12px;">
+        Status: Early, fragmented, no versioning
+      </div>
+    </div>
+    <div style="background: rgba(255,255,255,0.03); border: 2px solid #f59e0b; border-radius: 8px; padding: 16px; position: relative;">
+      <div style="position: absolute; top: -10px; right: 12px; background: #f59e0b; color: #000; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px;">THE GAP</div>
+      <h3 style="color: #fbbf24; margin-top: 0;">Composed Capability Packs</h3>
+      <p style="font-size: 13px; opacity: 0.7;">Domain expertise bundles</p>
+      <div style="font-size: 14px; line-height: 1.8;">
+        <div style="opacity: 0.4;">No versioned skill packs</div>
+        <div style="opacity: 0.4;">No composable knowledge bundles</div>
+        <div style="opacity: 0.4;">No agent-queryable registry</div>
+        <div style="opacity: 0.4;">No trust/signing model</div>
+      </div>
+      <div style="margin-top: 12px; padding: 8px; background: rgba(251, 191, 36, 0.15); border-radius: 4px; font-size: 12px; font-weight: 600; color: #fbbf24;">
+        This is where Agentic Stacks lives
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">Proven Patterns to Borrow</div>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 16px;">
+      <h3 style="margin-top: 0;">From Helm Charts</h3>
+      <ul style="font-size: 14px; line-height: 1.8; padding-left: 20px;">
+        <li>Dual versioning (pack version + target version)</li>
+        <li>Dependency declaration with SemVer ranges</li>
+        <li>Lock files for reproducibility</li>
+        <li>OCI registry distribution</li>
+        <li>Immutable published versions</li>
+      </ul>
+    </div>
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 16px;">
+      <h3 style="margin-top: 0;">From Ansible Galaxy</h3>
+      <ul style="font-size: 14px; line-height: 1.8; padding-left: 20px;">
+        <li>Namespace.collection naming</li>
+        <li>Two-level deps (pack-level + project-level)</li>
+        <li>Formal deprecation policy</li>
+        <li>Selective skill inclusion (not all-or-nothing)</li>
+      </ul>
+    </div>
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 16px;">
+      <h3 style="margin-top: 0;">From Kustomize</h3>
+      <ul style="font-size: 14px; line-height: 1.8; padding-left: 20px;">
+        <li>Base + overlay composition model</li>
+        <li>Patch/override without forking</li>
+        <li>"Same base, different targets" pattern</li>
+      </ul>
+    </div>
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 16px;">
+      <h3 style="margin-top: 0;">From HuggingGPT / Voyager</h3>
+      <ul style="font-size: 14px; line-height: 1.8; padding-left: 20px;">
+        <li>Agents query registries by natural language</li>
+        <li>Agents accumulate & compose skill libraries</li>
+        <li>Schema + examples = enough for discovery</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">The "I Know Kung Fu" Stack</div>
+  <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 24px;">
+    <div style="display: flex; align-items: center; gap: 24px;">
+      <div style="flex: 1; text-align: center;">
+        <div style="font-size: 48px; margin-bottom: 8px;">🤖</div>
+        <div style="font-size: 14px; opacity: 0.6;">Agent needs to<br>deploy OpenStack</div>
+      </div>
+      <div style="font-size: 24px; color: #6ee7b7;">→</div>
+      <div style="flex: 1; text-align: center; border: 1px dashed #f59e0b; border-radius: 8px; padding: 16px;">
+        <div style="font-size: 14px; font-weight: 600; color: #fbbf24; margin-bottom: 4px;">agentic-stacks.com</div>
+        <div style="font-size: 12px; opacity: 0.6;">search → evaluate → pull</div>
+      </div>
+      <div style="font-size: 24px; color: #6ee7b7;">→</div>
+      <div style="flex: 1; text-align: center;">
+        <div style="font-size: 48px; margin-bottom: 8px;">🧠</div>
+        <div style="font-size: 14px; opacity: 0.6;">Agent now <em>knows</em><br>OpenStack deployment</div>
+      </div>
+    </div>
+    <div style="margin-top: 20px; padding: 12px; background: rgba(110, 231, 183, 0.08); border-radius: 4px; font-size: 13px; text-align: center;">
+      Skills (markdown knowledge) + Automation (scripts/configs) + Dependencies (other stacks) = <strong>Instant Domain Expertise</strong>
+    </div>
+  </div>
+</div>

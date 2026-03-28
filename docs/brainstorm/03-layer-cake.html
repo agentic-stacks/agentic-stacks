@@ -1,0 +1,131 @@
+<h2>The Three Layers of Agentic Stacks</h2>
+<p class="subtitle">Each layer builds on the one below. Ship bottom-up.</p>
+
+<div class="section">
+  <div style="display: flex; flex-direction: column; gap: 2px;">
+
+    <!-- Layer 3 -->
+    <div style="background: linear-gradient(135deg, rgba(251,191,36,0.12), rgba(251,191,36,0.04)); border: 1px solid rgba(251,191,36,0.3); border-radius: 8px 8px 0 0; padding: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: start;">
+        <div>
+          <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #fbbf24; margin-bottom: 4px;">Layer 3 — Ship Last</div>
+          <h3 style="margin: 0 0 8px 0; color: #fbbf24;">Agent Discovery Protocol</h3>
+          <p style="font-size: 14px; opacity: 0.8; margin: 0 0 12px 0;">The "I know kung fu" API. Agents find and pull stacks at runtime.</p>
+        </div>
+        <div style="background: rgba(251,191,36,0.15); border-radius: 4px; padding: 4px 10px; font-size: 12px; color: #fbbf24; white-space: nowrap;">Phase 3</div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 13px;">
+        <div>
+          <strong>What it is:</strong>
+          <ul style="margin: 4px 0; padding-left: 18px; line-height: 1.6;">
+            <li>MCP server that agents can connect to</li>
+            <li>Semantic search: "I need to deploy a K8s cluster"</li>
+            <li>Returns stack metadata + install instructions</li>
+            <li>Agent evaluates, pulls, loads skills into context</li>
+          </ul>
+        </div>
+        <div>
+          <strong>Why it matters:</strong>
+          <ul style="margin: 4px 0; padding-left: 18px; line-height: 1.6;">
+            <li>Agents as consumers, not just humans</li>
+            <li>Self-assembling competence</li>
+            <li>Nobody else has this</li>
+            <li>Only works if layers 1+2 are solid</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Layer 2 -->
+    <div style="background: linear-gradient(135deg, rgba(147,197,253,0.12), rgba(147,197,253,0.04)); border: 1px solid rgba(147,197,253,0.3); padding: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: start;">
+        <div>
+          <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #93c5fd; margin-bottom: 4px;">Layer 2 — Ship Second</div>
+          <h3 style="margin: 0 0 8px 0; color: #93c5fd;">Registry &amp; Website (agentic-stacks.com)</h3>
+          <p style="font-size: 14px; opacity: 0.8; margin: 0 0 12px 0;">Discover, browse, pull versioned stacks. Human-facing.</p>
+        </div>
+        <div style="background: rgba(147,197,253,0.15); border-radius: 4px; padding: 4px 10px; font-size: 12px; color: #93c5fd; white-space: nowrap;">Phase 2</div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 13px;">
+        <div>
+          <strong>What it is:</strong>
+          <ul style="margin: 4px 0; padding-left: 18px; line-height: 1.6;">
+            <li>Web UI: browse stacks, read docs, see versions</li>
+            <li>OCI-based distribution (push/pull via GHCR)</li>
+            <li>CLI: <code>as pull openstack@2.1</code></li>
+            <li>Versioning: SemVer, lock files, immutable releases</li>
+            <li>Trust: verified publishers, signed artifacts</li>
+          </ul>
+        </div>
+        <div>
+          <strong>Why it matters:</strong>
+          <ul style="margin: 4px 0; padding-left: 18px; line-height: 1.6;">
+            <li>Discovery — people find what they need</li>
+            <li>Distribution — reliable, versioned delivery</li>
+            <li>Community — others can publish stacks</li>
+            <li>Gravity — more stacks = more users</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Layer 1 -->
+    <div style="background: linear-gradient(135deg, rgba(110,231,183,0.12), rgba(110,231,183,0.04)); border: 1px solid rgba(110,231,183,0.3); border-radius: 0 0 8px 8px; padding: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: start;">
+        <div>
+          <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #6ee7b7; margin-bottom: 4px;">Layer 1 — Ship First</div>
+          <h3 style="margin: 0 0 8px 0; color: #6ee7b7;">Stack Specification + Thin Runtime</h3>
+          <p style="font-size: 14px; opacity: 0.8; margin: 0 0 12px 0;">The standard for what a stack is and how it works.</p>
+        </div>
+        <div style="background: rgba(110,231,183,0.15); border-radius: 4px; padding: 4px 10px; font-size: 12px; color: #6ee7b7; white-space: nowrap;">Phase 1</div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 13px;">
+        <div>
+          <strong>The Spec:</strong>
+          <ul style="margin: 4px 0; padding-left: 18px; line-height: 1.6;">
+            <li><code>stack.yaml</code> manifest format</li>
+            <li>Directory conventions (skills/, profiles/, environments/)</li>
+            <li>Profile merge rules &amp; category ordering</li>
+            <li>Environment declaration schema</li>
+            <li>Skill composition patterns</li>
+            <li>Action flow (intent → plan → approve → execute → verify)</li>
+          </ul>
+        </div>
+        <div>
+          <strong>The Thin Runtime:</strong>
+          <ul style="margin: 4px 0; padding-left: 18px; line-height: 1.6;">
+            <li>Profile loader + ordered deep merge</li>
+            <li>Schema validation</li>
+            <li>Config diff engine</li>
+            <li>Append-only state store</li>
+            <li>Approval gate engine</li>
+            <li>Small API surface, rarely changes</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 24px;">
+  <div class="label">Shipping Order</div>
+  <div style="display: flex; align-items: center; gap: 12px; font-size: 14px;">
+    <div style="background: rgba(110,231,183,0.15); border: 1px solid rgba(110,231,183,0.3); border-radius: 8px; padding: 12px 16px; text-align: center; flex: 1;">
+      <div style="font-weight: 600; color: #6ee7b7;">Phase 1</div>
+      <div style="font-size: 12px; opacity: 0.7; margin-top: 4px;">Spec + Runtime</div>
+      <div style="font-size: 11px; opacity: 0.5; margin-top: 2px;">Prove with OpenStack + K8s</div>
+    </div>
+    <div style="color: rgba(255,255,255,0.3);">→</div>
+    <div style="background: rgba(147,197,253,0.15); border: 1px solid rgba(147,197,253,0.3); border-radius: 8px; padding: 12px 16px; text-align: center; flex: 1;">
+      <div style="font-weight: 600; color: #93c5fd;">Phase 2</div>
+      <div style="font-size: 12px; opacity: 0.7; margin-top: 4px;">Registry + Website</div>
+      <div style="font-size: 11px; opacity: 0.5; margin-top: 2px;">Publish stacks, invite community</div>
+    </div>
+    <div style="color: rgba(255,255,255,0.3);">→</div>
+    <div style="background: rgba(251,191,36,0.15); border: 1px solid rgba(251,191,36,0.3); border-radius: 8px; padding: 12px 16px; text-align: center; flex: 1;">
+      <div style="font-weight: 600; color: #fbbf24;">Phase 3</div>
+      <div style="font-size: 12px; opacity: 0.7; margin-top: 4px;">Agent Protocol</div>
+      <div style="font-size: 11px; opacity: 0.5; margin-top: 2px;">Agents discover + pull stacks</div>
+    </div>
+  </div>
+</div>

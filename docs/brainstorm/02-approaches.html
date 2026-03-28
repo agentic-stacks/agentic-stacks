@@ -1,0 +1,76 @@
+<h2>Three Approaches for Agentic Stacks</h2>
+<p class="subtitle">Based on your existing repos + landscape research, here are three directions</p>
+
+<div class="section">
+  <div class="label">What We Know From Your Repos</div>
+  <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 16px; margin-bottom: 24px; font-size: 14px; line-height: 1.8;">
+    <p style="margin-top: 0;">A stack = <strong>Skills</strong> (markdown brain) + <strong>Profiles</strong> (composable YAML configs) + <strong>Automation</strong> (Python/scripts hands) + <strong>Environment Schema</strong> (declaration of intent)</p>
+    <p>You're already extracting a shared core (<code>agentic_stacks</code>) in the K8s repo. Both repos share the same 5-layer architecture. The pattern is proven.</p>
+  </div>
+</div>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Registry-First: "Helm Hub for Agent Skills"</h3>
+      <p><strong>agentic-stacks.com is primarily a registry/marketplace.</strong></p>
+      <ul style="font-size: 14px; line-height: 1.6; margin: 8px 0;">
+        <li>Stacks are packaged as versioned OCI artifacts (like Helm charts)</li>
+        <li>Website = search, browse, install counts, verified publishers</li>
+        <li>CLI tool: <code>agentic-stacks pull openstack@2.1</code></li>
+        <li>API is agent-queryable (semantic search, not just keywords)</li>
+        <li>Community contributes stacks via git + publish workflow</li>
+      </ul>
+      <div class="pros-cons" style="margin-top: 12px;">
+        <div class="pros"><h4>Pros</h4><ul><li>Clear, proven model (npm, Helm Hub)</li><li>Network effects — more stacks = more users</li><li>Community can contribute</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Cold start problem (need stacks before users come)</li><li>Registry infra is real work</li><li>Doesn't differentiate much from Smithery</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Framework-First: "The SDK That Makes Stacks"</h3>
+      <p><strong>agentic-stacks is a framework for building stacks, with a registry as a distribution channel.</strong></p>
+      <ul style="font-size: 14px; line-height: 1.6; margin: 8px 0;">
+        <li>The shared core (<code>agentic_stacks</code>) becomes the product: profile engine, env management, state store, approval gates, skill composition</li>
+        <li><code>agentic-stacks init kubernetes</code> scaffolds a new stack project</li>
+        <li>Standardized structure: <code>skills/</code>, <code>profiles/</code>, <code>environments/</code>, <code>stack.yaml</code> manifest</li>
+        <li>Registry is secondary — publish when ready, pull what others built</li>
+        <li>Website documents the framework + hosts the registry</li>
+      </ul>
+      <div class="pros-cons" style="margin-top: 12px;">
+        <div class="pros"><h4>Pros</h4><ul><li>Your shared core already exists — this is natural</li><li>Framework creates ecosystem gravity</li><li>You control the "how stacks work" standard</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Harder to explain ("what is it?")</li><li>Framework adoption is slower than "just pull this"</li><li>More opinionated = more friction</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Hybrid: "Framework + Registry + Agent Protocol"</h3>
+      <p><strong>Three layers that reinforce each other.</strong></p>
+      <ul style="font-size: 14px; line-height: 1.6; margin: 8px 0;">
+        <li><strong>Core SDK:</strong> The <code>agentic_stacks</code> framework for building stacks (what you're already doing)</li>
+        <li><strong>Registry:</strong> agentic-stacks.com hosts published stacks with versioning, search, trust</li>
+        <li><strong>Agent Protocol:</strong> An API/MCP server that lets agents discover + pull stacks at runtime — the "I know kung fu" moment</li>
+        <li>Stacks can be consumed by humans (CLI pull) or by agents (protocol query)</li>
+        <li>Build your OpenStack + K8s stacks first, registry grows from real use</li>
+      </ul>
+      <div class="pros-cons" style="margin-top: 12px;">
+        <div class="pros"><h4>Pros</h4><ul><li>Biggest moat — framework + registry + protocol</li><li>Agent self-discovery is the unique differentiator</li><li>Your existing work feeds all three layers</li><li>Can ship incrementally (SDK → Registry → Protocol)</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Largest scope — risk of spreading thin</li><li>Agent protocol is uncharted territory</li><li>Need to nail the SDK before the rest matters</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 24px;">
+  <div style="background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 8px; padding: 16px;">
+    <h3 style="color: #fbbf24; margin-top: 0;">My Recommendation: C (Hybrid), shipped as B-first</h3>
+    <p style="font-size: 14px; line-height: 1.6;">The hybrid vision is where the real value is — but you ship it as the framework first. Your <code>agentic_stacks</code> shared core becomes the SDK. Your OpenStack and Kubernetes repos become the first two published stacks. The registry grows from real stacks. The agent protocol comes when the format is proven. You're already building 80% of this.</p>
+  </div>
+</div>
