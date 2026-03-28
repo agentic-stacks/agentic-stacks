@@ -1,0 +1,7 @@
+<a href="/stacks/{{ stack.namespace }}/{{ stack.name }}" class="stack-card block bg-gray-900 border border-gray-800 rounded-lg p-4 hover:no-underline">
+    <div class="flex items-start justify-between mb-2">
+        <h3 class="font-semibold text-white">{{ stack.namespace }}/{{ stack.name }}</h3>
+        <span class="text-xs bg-gray-800 text-gray-400 px-2 py-1 rounded">v{{ stack.version }}</span>
+    </div>
+    <p class="text-sm text-gray-400">{{ stack.description }}</p>
+</a>
