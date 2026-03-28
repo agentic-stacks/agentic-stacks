@@ -11,7 +11,7 @@ STATIC_DIR = pathlib.Path(__file__).parent / "static"
 _db_factory = None
 
 
-def get_db():
+async def get_db():
     if _db_factory is None:
         raise RuntimeError("Database not configured")
     db = _db_factory()
