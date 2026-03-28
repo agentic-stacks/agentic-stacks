@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ ns.name }} — Agentic Stacks{% endblock %}
+{% block content %}
+<div class="mb-8">
+    <div class="flex items-center gap-3 mb-2">
+        <h1 class="text-3xl font-bold">{{ ns.name }}</h1>
+        {% if ns.verified %}
+        <span class="bg-emerald-900 text-emerald-300 text-xs px-2 py-1 rounded">Verified</span>
+        {% endif %}
+    </div>
+</div>
+{% if stacks %}
+<h2 class="text-xl font-semibold mb-4">Stacks ({{ stacks|length }})</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {% for stack in stacks %}
+    {% include "_stack_card.html" %}
+    {% endfor %}
+</div>
+{% else %}
+<p class="text-gray-500">No stacks published yet.</p>
+{% endif %}
+{% endblock %}
