@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agentic-stacks"
+version = "0.1.0"
+description = "Agentic Stacks"
+requires-python = ">=3.11"
+authors = [
+    { name = "Agentic Stacks" },
+]
+dependencies = [
+    "pyyaml>=6.0",
+    "jsonschema>=4.20",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-tmp-files>=0.0.2",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/agentic_stacks"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

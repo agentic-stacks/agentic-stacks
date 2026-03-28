@@ -1,0 +1,5 @@
+security:
+  level: baseline
+  enforced: true
+  tls_required: true
+  min_password_length: 16
