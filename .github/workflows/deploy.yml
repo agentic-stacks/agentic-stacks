@@ -30,13 +30,13 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "22"
 
-      - name: Install pywrangler
-        run: uv tool install pywrangler
+      - name: Install wrangler
+        run: npm install -g wrangler@latest
 
       - name: Inject D1 database ID
         run: sed -i 's/database_id = "PLACEHOLDER"/database_id = "${{ secrets.D1_DATABASE_ID }}"/' wrangler.toml

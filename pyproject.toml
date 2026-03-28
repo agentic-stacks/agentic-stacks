@@ -36,6 +36,12 @@ local = [
     "alembic>=1.14",
 ]
 
+[dependency-groups]
+worker = [
+    "workers-py",
+    "workers-runtime-sdk",
+]
+
 [project.scripts]
 agentic-stacks = "agentic_stacks_cli:main"
 agentic-stacks-mcp = "agentic_stacks_mcp.server:main"
