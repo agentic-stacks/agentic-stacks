@@ -5,6 +5,7 @@ import agentic_stacks
 
 from astack.commands.init import init
 from astack.commands.doctor import doctor
+from astack.commands.validate import validate
 
 
 @click.group()
@@ -16,6 +17,7 @@ def cli():
 
 cli.add_command(init)
 cli.add_command(doctor)
+cli.add_command(validate)
 
 
 def main():
