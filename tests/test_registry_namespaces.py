@@ -1,3 +1,4 @@
+import asyncio
 import json
 import pytest
 from fastapi.testclient import TestClient
@@ -7,6 +8,13 @@ from sqlalchemy.pool import StaticPool
 from registry.database import Base
 from registry.app import create_app
 from registry.db_sqlite import SQLiteDB
+
+def _run(coro):
+    loop = asyncio.new_event_loop()
+    try:
+        return loop.run_until_complete(coro)
+    finally:
+        loop.close()
 
 
 @pytest.fixture
@@ -32,16 +40,16 @@ def client(db_session):
 @pytest.fixture
 def seeded_db(db_session):
     db = SQLiteDB(db_session)
-    db.create_namespace("agentic-stacks", "agentic-stacks")
+    _run(db.create_namespace("agentic-stacks", "agentic-stacks"))
     from registry.models import Namespace
     ns = db_session.query(Namespace).filter_by(name="agentic-stacks").first()
     ns.verified = True
     db_session.commit()
-    db.create_stack("agentic-stacks", "openstack", "OpenStack")
-    db.create_version("agentic-stacks", "openstack", {
+    _run(db.create_stack("agentic-stacks", "openstack", "OpenStack"))
+    _run(db.create_version("agentic-stacks", "openstack", {
         "version": "1.0.0", "digest": "sha256:abc",
         "registry_ref": "ghcr.io/agentic-stacks/openstack:1.0.0",
-    })
+    }))
     return db_session
 
 

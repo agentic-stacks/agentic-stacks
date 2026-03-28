@@ -1,3 +1,4 @@
+import asyncio
 import json
 import pytest
 from fastapi.testclient import TestClient
@@ -8,6 +9,13 @@ from sqlalchemy.pool import StaticPool
 from registry.database import Base
 from registry.app import create_app
 from registry.db_sqlite import SQLiteDB
+
+def _run(coro):
+    loop = asyncio.new_event_loop()
+    try:
+        return loop.run_until_complete(coro)
+    finally:
+        loop.close()
 
 
 @pytest.fixture
@@ -43,13 +51,13 @@ def test_stacks_page(client):
 @pytest.fixture
 def seeded_db(db_session):
     db = SQLiteDB(db_session)
-    db.create_namespace("agentic-stacks", "agentic-stacks")
+    _run(db.create_namespace("agentic-stacks", "agentic-stacks"))
     from registry.models import Namespace
     ns = db_session.query(Namespace).filter_by(name="agentic-stacks").first()
     ns.verified = True
     db_session.commit()
-    db.create_stack("agentic-stacks", "openstack", "OpenStack deployment via kolla-ansible")
-    db.create_version("agentic-stacks", "openstack", {
+    _run(db.create_stack("agentic-stacks", "openstack", "OpenStack deployment via kolla-ansible"))
+    _run(db.create_version("agentic-stacks", "openstack", {
         "version": "1.3.0", "target_software": "openstack",
         "target_versions": json.dumps(["2024.2", "2025.1"]),
         "skills": json.dumps([{"name": "deploy", "description": "Deploy OpenStack"},
@@ -61,7 +69,7 @@ def seeded_db(db_session):
         "requires": json.dumps({"tools": ["kolla-ansible"]}),
         "digest": "sha256:abc123",
         "registry_ref": "ghcr.io/agentic-stacks/openstack:1.3.0",
-    })
+    }))
     return db_session
 
 

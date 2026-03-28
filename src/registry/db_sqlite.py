@@ -80,7 +80,7 @@ class SQLiteDB:
     # Public interface
     # ------------------------------------------------------------------
 
-    def list_stacks(
+    async def list_stacks(
         self,
         q: str | None = None,
         namespace: str | None = None,
@@ -127,7 +127,7 @@ class SQLiteDB:
 
         return items, total
 
-    def get_stack(self, namespace: str, name: str) -> dict | None:
+    async def get_stack(self, namespace: str, name: str) -> dict | None:
         row = (
             self._session.query(Stack, Namespace)
             .join(Namespace, Stack.namespace_id == Namespace.id)
@@ -142,7 +142,7 @@ class SQLiteDB:
             return None
         return self._version_to_dict(ns.name, stack, sv)
 
-    def get_stack_version(self, namespace: str, name: str, version: str) -> dict | None:
+    async def get_stack_version(self, namespace: str, name: str, version: str) -> dict | None:
         row = (
             self._session.query(Stack, Namespace)
             .join(Namespace, Stack.namespace_id == Namespace.id)
@@ -164,7 +164,7 @@ class SQLiteDB:
             return None
         return self._version_to_dict(ns.name, stack, sv)
 
-    def get_namespace_with_stacks(self, namespace: str) -> dict | None:
+    async def get_namespace_with_stacks(self, namespace: str) -> dict | None:
         ns = (
             self._session.query(Namespace)
             .filter(Namespace.name == namespace)
@@ -193,7 +193,7 @@ class SQLiteDB:
             "stacks": stack_list,
         }
 
-    def create_namespace(self, name: str, github_org: str) -> dict:
+    async def create_namespace(self, name: str, github_org: str) -> dict:
         ns = Namespace(name=name, github_org=github_org)
         self._session.add(ns)
         self._session.commit()
@@ -205,7 +205,7 @@ class SQLiteDB:
             "created_at": ns.created_at.isoformat() if ns.created_at else None,
         }
 
-    def create_stack(self, namespace: str, name: str, description: str) -> dict:
+    async def create_stack(self, namespace: str, name: str, description: str) -> dict:
         ns = self._session.query(Namespace).filter(Namespace.name == namespace).first()
         if ns is None:
             raise ValueError(f"Namespace '{namespace}' not found")
@@ -221,7 +221,7 @@ class SQLiteDB:
             "updated_at": stack.updated_at.isoformat() if stack.updated_at else None,
         }
 
-    def create_version(self, namespace: str, name: str, version_data: dict) -> dict:
+    async def create_version(self, namespace: str, name: str, version_data: dict) -> dict:
         ns = self._session.query(Namespace).filter(Namespace.name == namespace).first()
         if ns is None:
             raise ValueError(f"Namespace '{namespace}' not found")
@@ -253,7 +253,7 @@ class SQLiteDB:
         self._session.refresh(sv)
         return self._version_to_dict(namespace, stack, sv)
 
-    def version_exists(self, namespace: str, name: str, version: str) -> bool:
+    async def version_exists(self, namespace: str, name: str, version: str) -> bool:
         row = (
             self._session.query(Stack, Namespace)
             .join(Namespace, Stack.namespace_id == Namespace.id)
@@ -273,7 +273,7 @@ class SQLiteDB:
         )
         return sv is not None
 
-    def featured_stacks(self, limit: int = 6) -> list[dict]:
+    async def featured_stacks(self, limit: int = 6) -> list[dict]:
         stacks_with_ns = (
             self._session.query(Stack, Namespace)
             .join(Namespace, Stack.namespace_id == Namespace.id)
@@ -287,7 +287,7 @@ class SQLiteDB:
             result.append(self._stack_summary(ns.name, stack, sv))
         return result
 
-    def all_versions(self, namespace: str, name: str) -> list[dict]:
+    async def all_versions(self, namespace: str, name: str) -> list[dict]:
         row = (
             self._session.query(Stack, Namespace)
             .join(Namespace, Stack.namespace_id == Namespace.id)

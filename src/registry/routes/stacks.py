@@ -16,7 +16,7 @@ async def list_stacks(
     sort: str = "updated", page: int = 1, per_page: int = 20,
     db=Depends(get_db),
 ):
-    items, total = db.list_stacks(q=q, namespace=namespace, target=target,
+    items, total = await db.list_stacks(q=q, namespace=namespace, target=target,
                                   sort=sort, page=page, per_page=per_page)
     stack_items = []
     for item in items:
@@ -34,8 +34,8 @@ async def list_stacks(
 
 
 @router.get("/stacks/{namespace}/{name}", response_model=StackVersionResponse)
-def get_stack(namespace: str, name: str, db=Depends(get_db)):
-    result = db.get_stack(namespace, name)
+async def get_stack(namespace: str, name: str, db=Depends(get_db)):
+    result = await db.get_stack(namespace, name)
     if result is None:
         raise HTTPException(404, f"Stack '{namespace}/{name}' not found")
     return _to_version_response(result)
@@ -43,7 +43,7 @@ def get_stack(namespace: str, name: str, db=Depends(get_db)):
 
 @router.get("/stacks/{namespace}/{name}/{version}", response_model=StackVersionResponse)
 async def get_stack_version(namespace: str, name: str, version: str, db=Depends(get_db)):
-    result = db.get_stack_version(namespace, name, version)
+    result = await db.get_stack_version(namespace, name, version)
     if result is None:
         raise HTTPException(404, f"Version '{version}' not found for '{namespace}/{name}'")
     return _to_version_response(result)
@@ -66,20 +66,15 @@ async def register_stack(
     if body.namespace not in user_orgs:
         raise HTTPException(403, f"You don't have access to namespace '{body.namespace}'")
 
-    ns_data = db.get_namespace_with_stacks(body.namespace)
+    ns_data = await db.get_namespace_with_stacks(body.namespace)
     if not ns_data:
-        db.create_namespace(body.namespace, body.namespace)
+        await db.create_namespace(body.namespace, body.namespace)
 
-    stack_data = db.get_stack(body.namespace, body.name)
+    stack_data = await db.get_stack(body.namespace, body.name)
     if not stack_data:
-        db.create_stack(body.namespace, body.name, body.description)
-    else:
-        # Update description — create_stack won't be called, so we handle via
-        # the abstraction. For now SQLiteDB doesn't have an update_stack method,
-        # so we rely on create_version updating the stack's updated_at.
-        pass
+        await db.create_stack(body.namespace, body.name, body.description)
 
-    if db.version_exists(body.namespace, body.name, body.version):
+    if await db.version_exists(body.namespace, body.name, body.version):
         raise HTTPException(409, f"Version '{body.version}' already exists for '{body.namespace}/{body.name}'")
 
     version_data = {
@@ -94,7 +89,7 @@ async def register_stack(
         "digest": body.digest,
         "registry_ref": body.registry_ref,
     }
-    result = db.create_version(body.namespace, body.name, version_data)
+    result = await db.create_version(body.namespace, body.name, version_data)
     return _to_version_response(result)
 
 

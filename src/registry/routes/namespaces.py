@@ -8,7 +8,7 @@ router = APIRouter(prefix="/api/v1")
 
 @router.get("/namespaces/{namespace}", response_model=NamespaceResponse)
 async def get_namespace(namespace: str, db=Depends(get_db)):
-    ns_data = db.get_namespace_with_stacks(namespace)
+    ns_data = await db.get_namespace_with_stacks(namespace)
     if not ns_data:
         raise HTTPException(404, f"Namespace '{namespace}' not found")
     items = []
