@@ -1,132 +1,258 @@
-# src/registry/db_d1.py
 """Cloudflare D1 implementation of StacksDB.
 
-This module documents the SQL queries for D1. On Cloudflare Workers,
-the D1 binding (env.DB) is accessed via JavaScript interop through Pyodide.
-Methods here are async and use the D1 prepare/bind/all/first/run API.
-
-For local dev and tests, use db_sqlite.py instead.
+Uses the D1 binding (env.DB) via Pyodide JS interop.
+D1 methods return JS objects — we convert them to Python dicts.
 """
 
 import json
 
 
-class D1DB:
-    """StacksDB implementation for Cloudflare D1.
+def _js_to_dict(js_obj):
+    """Convert a JS object from D1 result to a Python dict."""
+    if js_obj is None:
+        return None
+    # In Pyodide, JS objects can be converted via .to_py() or dict()
+    try:
+        return js_obj.to_py()
+    except AttributeError:
+        return dict(js_obj)
 
-    Usage in a Cloudflare Worker:
-        db = D1DB(env.DB)  # env.DB is the D1 binding from wrangler.toml
-    """
+
+def _js_results_to_list(result):
+    """Convert D1 .all() result to a list of dicts."""
+    if result is None:
+        return []
+    try:
+        results = result.results
+        if results is None:
+            return []
+        return [_js_to_dict(r) for r in results]
+    except AttributeError:
+        return []
+
+
+def _json_loads_safe(value, default):
+    if value is None:
+        return default
+    if isinstance(value, (list, dict)):
+        return value
+    try:
+        return json.loads(value)
+    except (json.JSONDecodeError, TypeError):
+        return default
+
+
+def _row_to_version_dict(row):
+    """Convert a D1 row to a full version dict."""
+    if not row:
+        return None
+    return {
+        "namespace": row.get("ns_name", ""),
+        "name": row.get("stack_name", row.get("name", "")),
+        "description": row.get("description", ""),
+        "version": row.get("version", ""),
+        "target_software": row.get("target_software", ""),
+        "target_versions": _json_loads_safe(row.get("target_versions"), []),
+        "skills": _json_loads_safe(row.get("skills"), []),
+        "profiles": _json_loads_safe(row.get("profiles"), {}),
+        "depends_on": _json_loads_safe(row.get("depends_on"), []),
+        "deprecations": _json_loads_safe(row.get("deprecations"), []),
+        "requires": _json_loads_safe(row.get("requires"), {}),
+        "digest": row.get("digest", ""),
+        "registry_ref": row.get("registry_ref", ""),
+        "published_at": row.get("published_at"),
+    }
+
+
+def _row_to_summary(row):
+    """Convert a D1 row to a stack list summary."""
+    if not row:
+        return None
+    return {
+        "namespace": row.get("ns_name", ""),
+        "name": row.get("stack_name", row.get("name", "")),
+        "description": row.get("description", ""),
+        "version": row.get("version", "0.0.0"),
+        "target_software": row.get("target_software", ""),
+        "target_versions": _json_loads_safe(row.get("target_versions"), []),
+    }
+
+
+class D1DB:
+    """StacksDB backed by Cloudflare D1."""
 
     def __init__(self, d1_binding):
         self._db = d1_binding
 
-    # Note: All methods below are documented with their SQL queries.
-    # In the Cloudflare Worker runtime, these would use:
-    #   await self._db.prepare(sql).bind(*params).first()  -- for single row
-    #   await self._db.prepare(sql).bind(*params).all()    -- for multiple rows
-    #   await self._db.prepare(sql).bind(*params).run()    -- for INSERT/UPDATE/DELETE
+    def _first(self, sql, *params):
+        if params:
+            result = self._db.prepare(sql).bind(*params).first()
+        else:
+            result = self._db.prepare(sql).first()
+        return _js_to_dict(result)
 
-    # The sync protocol methods raise NotImplementedError because D1 is async.
-    # When running on Cloudflare, the worker entry point handles the async bridge.
+    def _all(self, sql, *params):
+        if params:
+            result = self._db.prepare(sql).bind(*params).all()
+        else:
+            result = self._db.prepare(sql).all()
+        return _js_results_to_list(result)
+
+    def _run(self, sql, *params):
+        if params:
+            self._db.prepare(sql).bind(*params).run()
+        else:
+            self._db.prepare(sql).run()
 
     def list_stacks(self, q=None, namespace=None, target=None,
                     sort="updated", page=1, per_page=20):
-        """
-        SQL:
-            SELECT s.*, n.name as ns_name FROM stacks s
-            JOIN namespaces n ON s.namespace_id = n.id
-            WHERE s.name LIKE ? OR s.description LIKE ?  -- if q
-            AND n.name = ?  -- if namespace
-            ORDER BY s.updated_at DESC  -- or s.name
-            LIMIT ? OFFSET ?
+        # Build query dynamically
+        where_clauses = []
+        params = []
 
-        For each stack, get latest version:
-            SELECT * FROM stack_versions WHERE stack_id = ?
-            ORDER BY published_at DESC LIMIT 1
+        if q:
+            where_clauses.append("(s.name LIKE ? OR s.description LIKE ?)")
+            params.extend([f"%{q}%", f"%{q}%"])
+        if namespace:
+            where_clauses.append("n.name = ?")
+            params.append(namespace)
+
+        where = ""
+        if where_clauses:
+            where = "WHERE " + " AND ".join(where_clauses)
+
+        order = "s.updated_at DESC" if sort != "name" else "s.name"
+        offset = (page - 1) * per_page
+
+        # Count
+        count_sql = f"SELECT COUNT(*) as cnt FROM stacks s JOIN namespaces n ON s.namespace_id = n.id {where}"
+        count_row = self._first(count_sql, *params) if params else self._first(count_sql)
+        total = count_row["cnt"] if count_row else 0
+
+        # Fetch stacks with latest version
+        sql = f"""
+            SELECT s.id as stack_id, s.name as stack_name, s.description, n.name as ns_name,
+                   sv.version, sv.target_software, sv.target_versions, sv.digest, sv.registry_ref
+            FROM stacks s
+            JOIN namespaces n ON s.namespace_id = n.id
+            LEFT JOIN stack_versions sv ON sv.id = (
+                SELECT id FROM stack_versions WHERE stack_id = s.id ORDER BY published_at DESC LIMIT 1
+            )
+            {where}
+            ORDER BY {order}
+            LIMIT ? OFFSET ?
         """
-        raise NotImplementedError("Use async D1 binding in Cloudflare Worker")
+        params.extend([per_page, offset])
+        rows = self._all(sql, *params) if params else self._all(sql)
+
+        items = [_row_to_summary(r) for r in rows if r]
+        return items, total
 
     def get_stack(self, namespace, name):
-        """
-        SQL:
-            SELECT s.*, n.name as ns_name FROM stacks s
+        sql = """
+            SELECT sv.*, s.name as stack_name, s.description, n.name as ns_name
+            FROM stack_versions sv
+            JOIN stacks s ON sv.stack_id = s.id
             JOIN namespaces n ON s.namespace_id = n.id
             WHERE n.name = ? AND s.name = ?
-
-        Then latest version:
-            SELECT * FROM stack_versions WHERE stack_id = ?
-            ORDER BY published_at DESC LIMIT 1
+            ORDER BY sv.published_at DESC LIMIT 1
         """
-        raise NotImplementedError("Use async D1 binding in Cloudflare Worker")
+        row = self._first(sql, namespace, name)
+        return _row_to_version_dict(row)
 
     def get_stack_version(self, namespace, name, version):
-        """
-        SQL:
+        sql = """
             SELECT sv.*, s.name as stack_name, s.description, n.name as ns_name
             FROM stack_versions sv
             JOIN stacks s ON sv.stack_id = s.id
             JOIN namespaces n ON s.namespace_id = n.id
             WHERE n.name = ? AND s.name = ? AND sv.version = ?
         """
-        raise NotImplementedError("Use async D1 binding in Cloudflare Worker")
+        row = self._first(sql, namespace, name, version)
+        return _row_to_version_dict(row)
 
     def get_namespace_with_stacks(self, namespace):
+        ns = self._first("SELECT * FROM namespaces WHERE name = ?", namespace)
+        if not ns:
+            return None
+        stacks_sql = """
+            SELECT s.id as stack_id, s.name as stack_name, s.description, ? as ns_name,
+                   sv.version, sv.target_software, sv.target_versions
+            FROM stacks s
+            LEFT JOIN stack_versions sv ON sv.id = (
+                SELECT id FROM stack_versions WHERE stack_id = s.id ORDER BY published_at DESC LIMIT 1
+            )
+            WHERE s.namespace_id = ?
         """
-        SQL:
-            SELECT * FROM namespaces WHERE name = ?
-        Then:
-            SELECT s.* FROM stacks s WHERE s.namespace_id = ?
-        """
-        raise NotImplementedError("Use async D1 binding in Cloudflare Worker")
+        rows = self._all(stacks_sql, namespace, ns["id"])
+        stacks = [_row_to_summary(r) for r in rows if r and r.get("version")]
+        return {
+            "name": ns["name"],
+            "github_org": ns.get("github_org"),
+            "verified": bool(ns.get("verified")),
+            "stacks": stacks,
+        }
 
     def create_namespace(self, name, github_org):
-        """
-        SQL: INSERT INTO namespaces (name, github_org) VALUES (?, ?)
-        """
-        raise NotImplementedError("Use async D1 binding in Cloudflare Worker")
+        self._run("INSERT INTO namespaces (name, github_org) VALUES (?, ?)", name, github_org)
+        row = self._first("SELECT * FROM namespaces WHERE name = ?", name)
+        return {"id": row["id"], "name": row["name"]}
 
     def create_stack(self, namespace, name, description):
-        """
-        SQL:
-            SELECT id FROM namespaces WHERE name = ?
-            INSERT INTO stacks (namespace_id, name, description) VALUES (?, ?, ?)
-        """
-        raise NotImplementedError("Use async D1 binding in Cloudflare Worker")
+        ns = self._first("SELECT id FROM namespaces WHERE name = ?", namespace)
+        self._run("INSERT INTO stacks (namespace_id, name, description) VALUES (?, ?, ?)",
+                  ns["id"], name, description)
+        row = self._first("SELECT * FROM stacks WHERE namespace_id = ? AND name = ?", ns["id"], name)
+        return {"id": row["id"], "name": row["name"]}
 
     def create_version(self, namespace, name, version_data):
-        """
-        SQL:
-            SELECT s.id FROM stacks s JOIN namespaces n ON s.namespace_id = n.id
-            WHERE n.name = ? AND s.name = ?
-
-            INSERT INTO stack_versions (stack_id, version, target_software, ...)
-            VALUES (?, ?, ?, ...)
-        """
-        raise NotImplementedError("Use async D1 binding in Cloudflare Worker")
+        ns = self._first("SELECT id FROM namespaces WHERE name = ?", namespace)
+        stack = self._first("SELECT id FROM stacks WHERE namespace_id = ? AND name = ?", ns["id"], name)
+        self._run(
+            """INSERT INTO stack_versions
+               (stack_id, version, target_software, target_versions, skills, profiles,
+                depends_on, deprecations, requires, digest, registry_ref)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            stack["id"],
+            version_data.get("version", "0.0.0"),
+            version_data.get("target_software", ""),
+            version_data.get("target_versions", "[]"),
+            version_data.get("skills", "[]"),
+            version_data.get("profiles", "{}"),
+            version_data.get("depends_on", "[]"),
+            version_data.get("deprecations", "[]"),
+            version_data.get("requires", "{}"),
+            version_data.get("digest", ""),
+            version_data.get("registry_ref", ""),
+        )
+        return {"id": 0, "version": version_data.get("version", "0.0.0")}
 
     def version_exists(self, namespace, name, version):
-        """
-        SQL:
-            SELECT 1 FROM stack_versions sv
+        sql = """
+            SELECT 1 as found FROM stack_versions sv
             JOIN stacks s ON sv.stack_id = s.id
             JOIN namespaces n ON s.namespace_id = n.id
             WHERE n.name = ? AND s.name = ? AND sv.version = ?
         """
-        raise NotImplementedError("Use async D1 binding in Cloudflare Worker")
+        row = self._first(sql, namespace, name, version)
+        return row is not None
 
     def featured_stacks(self, limit=6):
-        """
-        SQL:
-            SELECT s.*, n.name as ns_name FROM stacks s
+        sql = """
+            SELECT s.id as stack_id, s.name as stack_name, s.description, n.name as ns_name,
+                   sv.version, sv.target_software, sv.target_versions
+            FROM stacks s
             JOIN namespaces n ON s.namespace_id = n.id
+            LEFT JOIN stack_versions sv ON sv.id = (
+                SELECT id FROM stack_versions WHERE stack_id = s.id ORDER BY published_at DESC LIMIT 1
+            )
             ORDER BY s.updated_at DESC LIMIT ?
         """
-        raise NotImplementedError("Use async D1 binding in Cloudflare Worker")
+        rows = self._all(sql, limit)
+        return [_row_to_summary(r) for r in rows if r and r.get("version")]
 
     def all_versions(self, namespace, name):
-        """
-        SQL:
+        sql = """
             SELECT sv.version, sv.digest, sv.published_at
             FROM stack_versions sv
             JOIN stacks s ON sv.stack_id = s.id
@@ -134,4 +260,6 @@ class D1DB:
             WHERE n.name = ? AND s.name = ?
             ORDER BY sv.published_at DESC
         """
-        raise NotImplementedError("Use async D1 binding in Cloudflare Worker")
+        rows = self._all(sql, namespace, name)
+        return [{"version": r["version"], "digest": r.get("digest", ""),
+                 "published_at": r.get("published_at", "")} for r in rows]
