@@ -21,6 +21,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Inject D1 database ID
+        run: sed -i 's/database_id = "PLACEHOLDER"/database_id = "${{ secrets.D1_DATABASE_ID }}"/' wrangler.toml
+
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
