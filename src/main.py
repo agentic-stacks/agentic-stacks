@@ -4,13 +4,18 @@ For local development, use: uvicorn registry.local:app --reload
 """
 from workers import WorkerEntrypoint
 import asgi
-from registry.app import create_app
 
-# CF Workers doesn't support threads (needed by slowapi's in-memory store)
-# Rate limiting on CF is handled by their built-in DDoS protection instead
-app = create_app(enable_rate_limit=False)
+_app = None
+
+
+def _get_app():
+    global _app
+    if _app is None:
+        from registry.app import create_app
+        _app = create_app(enable_rate_limit=False)
+    return _app
 
 
 class Default(WorkerEntrypoint):
     async def fetch(self, request):
-        return await asgi.fetch(app, request, self.env)
+        return await asgi.fetch(_get_app(), request, self.env)
