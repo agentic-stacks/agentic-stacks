@@ -8,6 +8,7 @@ from agentic_stacks_cli.commands.doctor import doctor
 from agentic_stacks_cli.commands.validate import validate
 from agentic_stacks_cli.commands.login import login
 from agentic_stacks_cli.commands.publish import publish
+from agentic_stacks_cli.commands.pull import pull
 
 
 @click.group()
@@ -22,6 +23,7 @@ cli.add_command(doctor)
 cli.add_command(validate)
 cli.add_command(login)
 cli.add_command(publish)
+cli.add_command(pull)
 
 
 def main():
