@@ -6,14 +6,14 @@
   <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 20px; margin-bottom: 16px;">
     <div style="font-family: monospace; font-size: 13px; line-height: 2.2; background: rgba(0,0,0,0.3); border-radius: 6px; padding: 16px;">
       <div style="color: #6ee7b7;">## Scaffold a new project using a stack</div>
-      <div><span style="color: #93c5fd;">$</span> as init --stack littleknifelabs/kubernetes@2.1</div>
+      <div><span style="color: #93c5fd;">$</span> as init --stack agentic-stacks/kubernetes@2.1</div>
       <div style="opacity: 0.5;">  → creates project with profiles/, environments/, skills/ from stack</div>
       <div style="opacity: 0.5;">  → writes stacks.lock pinning exact version + digest</div>
       <div style="opacity: 0.5;">  → generates CLAUDE.md pointing agent at the skills</div>
       <br>
       <div style="color: #6ee7b7;">## Pull a stack into an existing project</div>
-      <div><span style="color: #93c5fd;">$</span> as pull littleknifelabs/openstack@1.3</div>
-      <div style="opacity: 0.5;">  → downloads stack to .stacks/littleknifelabs/openstack/1.3.0/</div>
+      <div><span style="color: #93c5fd;">$</span> as pull agentic-stacks/openstack@1.3</div>
+      <div style="opacity: 0.5;">  → downloads stack to .stacks/agentic-stacks/openstack/1.3.0/</div>
       <div style="opacity: 0.5;">  → updates stacks.lock</div>
       <br>
       <div style="color: #6ee7b7;">## Upgrade with deprecation warnings</div>
@@ -63,7 +63,7 @@
           </div>
           <div style="display: flex; gap: 8px; margin-bottom: 12px;">
             <div style="background: rgba(251,191,36,0.2); border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; color: #fbbf24;">2</div>
-            <div>Calls <code>search_stacks("openstack deployment")</code><br><span style="opacity: 0.5;">Gets back: littleknifelabs/openstack@2.1</span></div>
+            <div>Calls <code>search_stacks("openstack deployment")</code><br><span style="opacity: 0.5;">Gets back: agentic-stacks/openstack@2.1</span></div>
           </div>
           <div style="display: flex; gap: 8px; margin-bottom: 12px;">
             <div style="background: rgba(251,191,36,0.2); border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; color: #fbbf24;">3</div>

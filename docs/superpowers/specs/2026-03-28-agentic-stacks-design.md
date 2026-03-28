@@ -64,7 +64,7 @@ This structure is validated by the existing agentic-openstack and agentic-kubern
 
 ```yaml
 name: openstack
-namespace: littleknifelabs
+namespace: agentic-stacks
 version: "1.3.0"
 description: "Agent-driven OpenStack cloud deployment and operations on kolla-ansible"
 
@@ -172,7 +172,7 @@ Design principle: **small API surface, changes rarely.** The runtime handles the
 **Lock file** (`stacks.lock`):
 ```yaml
 stacks:
-  - name: littleknifelabs/openstack
+  - name: agentic-stacks/openstack
     version: "1.3.0"
     digest: sha256:abc123def456...
   - name: agentic-stacks/base
@@ -194,7 +194,7 @@ An MCP server that exposes the registry as tools any AI agent can call:
 
 **Agent consumption flow:**
 1. Agent encounters a task it doesn't know how to do ("deploy an OpenStack cloud")
-2. Calls `search_stacks("openstack deployment")` → gets `littleknifelabs/openstack@2.1`
+2. Calls `search_stacks("openstack deployment")` → gets `agentic-stacks/openstack@2.1`
 3. Calls `get_stack_info` to evaluate: reads skills, profiles, requirements
 4. Asks human for approval (unless trust policy allows auto-pull for verified stacks)
 5. Calls `pull_stack`, loads skills into context
@@ -228,7 +228,7 @@ depends_on:
     namespace: agentic-stacks
     version: "^1.0"      # >=1.0.0, <2.0.0
   - name: kubernetes
-    namespace: littleknifelabs
+    namespace: agentic-stacks
     version: "~2.1"      # >=2.1.0, <2.2.0
 ```
 
@@ -256,7 +256,7 @@ Deprecated skills must survive for at least one major version after deprecation.
 ```yaml
 depends_on:
   - name: kubernetes
-    namespace: littleknifelabs
+    namespace: agentic-stacks
     version: "^2.0"
 ```
 
@@ -361,8 +361,8 @@ Namespaces are claimed by publishers. Verified publishers undergo identity verif
 
 Two stacks already exist as proof of concept:
 
-- **agentic-openstack** (`/Users/ant/Development/littleknifelabs/agentic-openstack/`) — agent-driven OpenStack deployment on kolla-ansible. Design spec complete, Phase 1 plan written.
-- **agentic-kubernetes** (`/Users/ant/Development/littleknifelabs/agentic-kubernetes/`) — agent-driven Kubernetes on Talos Linux. Design spec complete, Phase 1 plan written. Already extracting shared core as `agentic_stacks` package.
+- **agentic-openstack** — agent-driven OpenStack deployment on kolla-ansible. Design spec complete, Phase 1 plan written. Will move to `github.com/agentic-stacks/openstack-kolla`.
+- **agentic-kubernetes** — agent-driven Kubernetes on Talos Linux. Design spec complete, Phase 1 plan written. Will move to `github.com/agentic-stacks/kubernetes-talos`.
 
 Both repos validate the stack anatomy: skills, profiles, environments, execution layer, approval gates, state tracking. Both share the same 5-layer architecture and action flow.
 
