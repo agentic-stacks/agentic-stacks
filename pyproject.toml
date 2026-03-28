@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "agentic-stacks"
 version = "0.1.0"
 description = "Agentic Stacks"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 authors = [
     { name = "Agentic Stacks" },
 ]
@@ -15,6 +15,10 @@ dependencies = [
     "jsonschema>=4.20",
     "click>=8.1",
     "httpx>=0.27",
+    "fastapi>=0.115",
+    "jinja2>=3.1",
+    "slowapi>=0.1.9",
+    "mistune>=3.0",
 ]
 
 [project.optional-dependencies]
@@ -25,17 +29,11 @@ dev = [
 ]
 mcp = [
     "mcp[cli]>=1.0",
-    "httpx>=0.27",
 ]
-registry = [
-    "fastapi>=0.115",
+local = [
     "uvicorn[standard]>=0.32",
     "sqlalchemy>=2.0",
     "alembic>=1.14",
-    "slowapi>=0.1.9",
-    "httpx>=0.27",
-    "jinja2>=3.1",
-    "mistune>=3.0",
 ]
 
 [project.scripts]
