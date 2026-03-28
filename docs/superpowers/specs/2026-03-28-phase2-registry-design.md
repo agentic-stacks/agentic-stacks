@@ -256,9 +256,9 @@ Search bar on homepage and `/stacks` page. Uses htmx for live results:
 - **Tailwind CSS** — styling (CDN or standalone CLI)
 - **markdown2** or **mistune** — render README files
 
-## Open Questions
+## Decisions
 
-1. **Hosting for the API/website** — Fly.io, Railway, a VPS, or your own infra? Affects deployment approach.
-2. **GHCR auth for pull** — public stacks should be pullable without auth. Need to ensure GHCR packages are published as public.
-3. **Rate limiting** — the API will need rate limiting once public. Add in 2b or defer?
-4. **Cosign signing** — include in 2a or defer to a later hardening pass?
+1. **Hosting:** Cloudflare (Workers/Pages for the site, D1 or external DB for the API).
+2. **GHCR auth for pull:** Stacks are published as public GHCR packages. No auth needed for pull.
+3. **Rate limiting:** Include in Phase 2b. Bots will hammer an open API.
+4. **Cosign signing:** Deferred to a hardening pass after Phase 2. Valuable but not blocking launch.
