@@ -67,6 +67,16 @@ Production runs on Cloudflare Python Workers via ASGI bridge.
 
 CI deploys automatically on push to main (`.github/workflows/deploy.yml`).
 
+## Operator Projects
+
+`agentic-stacks init --from <stack-path>` scaffolds an operator project that extends a base stack. The operator project has `environments/`, `state/`, and `stacks.lock` but no `skills/` or `profiles/` — those come from the parent stack in `.stacks/`.
+
+The stack's `project` field in `stack.yaml` declares what each environment directory should contain (`config.yml`, `inventory/`, `files/`, `secrets/`, etc.). The generated `CLAUDE.md` wires the agent to the stack's skills.
+
+The agent reads the parent stack's skills to know the domain and the operator's config to know specifics. The operator works with the agent to build out their deployment iteratively.
+
+`doctor` detects operator projects (via the `extends` field) and validates: parent stack is pulled, environments exist, state directory present.
+
 ## Testing
 
-pytest with pytest-asyncio. Tests in `tests/`, fixtures in `tests/fixtures/sample-stack/`. All tests use SQLite in-memory — no D1 in tests. CI runs on Python 3.12 and 3.13.
+pytest with pytest-asyncio. Tests in `tests/`, fixtures in `tests/fixtures/sample-stack/` and `tests/fixtures/parent-stack/`. All tests use SQLite in-memory — no D1 in tests. CI runs on Python 3.12 and 3.13.
