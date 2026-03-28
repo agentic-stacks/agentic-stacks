@@ -6,8 +6,9 @@ from workers import WorkerEntrypoint
 import asgi
 from registry.app import create_app
 
-# Create app without SQLite — D1 will be wired via env binding
-app = create_app()
+# CF Workers doesn't support threads (needed by slowapi's in-memory store)
+# Rate limiting on CF is handled by their built-in DDoS protection instead
+app = create_app(enable_rate_limit=False)
 
 
 class Default(WorkerEntrypoint):
