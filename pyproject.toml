@@ -23,10 +23,10 @@ dev = [
 ]
 
 [project.scripts]
-astack = "astack:main"
+agentic-stacks = "agentic_stacks_cli:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/agentic_stacks", "src/astack"]
+packages = ["src/agentic_stacks", "src/agentic_stacks_cli"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

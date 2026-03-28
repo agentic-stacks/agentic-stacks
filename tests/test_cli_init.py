@@ -1,6 +1,6 @@
 import yaml
 from click.testing import CliRunner
-from astack import cli
+from agentic_stacks_cli import cli
 
 
 def test_init_creates_stack_structure(tmp_path):

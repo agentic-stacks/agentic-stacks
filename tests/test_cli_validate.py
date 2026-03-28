@@ -1,7 +1,7 @@
 import json
 import yaml
 from click.testing import CliRunner
-from astack import cli
+from agentic_stacks_cli import cli
 
 
 def _setup_stack_with_env(path, env_name="dev", env_data=None):

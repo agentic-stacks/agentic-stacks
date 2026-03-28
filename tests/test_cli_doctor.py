@@ -1,7 +1,7 @@
 import json
 import yaml
 from click.testing import CliRunner
-from astack import cli
+from agentic_stacks_cli import cli
 
 
 def _create_valid_stack(path):

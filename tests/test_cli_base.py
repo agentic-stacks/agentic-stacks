@@ -1,5 +1,5 @@
 from click.testing import CliRunner
-from astack import cli
+from agentic_stacks_cli import cli
 
 
 def test_cli_help():
