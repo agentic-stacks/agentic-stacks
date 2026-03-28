@@ -11,7 +11,7 @@ router = APIRouter(prefix="/api/v1")
 
 
 @router.get("/stacks", response_model=StackListResponse)
-def list_stacks(
+async def list_stacks(
     q: str | None = None, target: str | None = None, namespace: str | None = None,
     sort: str = "updated", page: int = 1, per_page: int = 20,
     db=Depends(get_db),
@@ -42,7 +42,7 @@ def get_stack(namespace: str, name: str, db=Depends(get_db)):
 
 
 @router.get("/stacks/{namespace}/{name}/{version}", response_model=StackVersionResponse)
-def get_stack_version(namespace: str, name: str, version: str, db=Depends(get_db)):
+async def get_stack_version(namespace: str, name: str, version: str, db=Depends(get_db)):
     result = db.get_stack_version(namespace, name, version)
     if result is None:
         raise HTTPException(404, f"Version '{version}' not found for '{namespace}/{name}'")
@@ -50,7 +50,7 @@ def get_stack_version(namespace: str, name: str, version: str, db=Depends(get_db
 
 
 @router.post("/stacks", response_model=StackVersionResponse, status_code=201)
-def register_stack(
+async def register_stack(
     body: StackRegisterRequest,
     authorization: str | None = Header(None),
     db=Depends(get_db),

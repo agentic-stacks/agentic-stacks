@@ -24,7 +24,7 @@ class _Obj:
 
 
 @router.get("/", response_class=HTMLResponse)
-def homepage(request: Request, db=Depends(get_db)):
+async def homepage(request: Request, db=Depends(get_db)):
     featured = db.featured_stacks(limit=6)
     # Templates expect plain dicts with namespace/name/version/description keys
     featured_dicts = []
@@ -38,7 +38,7 @@ def homepage(request: Request, db=Depends(get_db)):
 
 
 @router.get("/stacks", response_class=HTMLResponse)
-def stacks_page(request: Request, q: str = "", db=Depends(get_db)):
+async def stacks_page(request: Request, q: str = "", db=Depends(get_db)):
     items, _ = db.list_stacks(q=q or None, per_page=50)
     stacks_list = []
     for s in items:
@@ -51,7 +51,7 @@ def stacks_page(request: Request, q: str = "", db=Depends(get_db)):
 
 
 @router.get("/web/search", response_class=HTMLResponse)
-def search_fragment(request: Request, q: str = "", db=Depends(get_db)):
+async def search_fragment(request: Request, q: str = "", db=Depends(get_db)):
     if not q:
         return HTMLResponse("")
     items, _ = db.list_stacks(q=q, per_page=10)
@@ -66,7 +66,7 @@ def search_fragment(request: Request, q: str = "", db=Depends(get_db)):
 
 
 @router.get("/stacks/{namespace}/{name}", response_class=HTMLResponse)
-def stack_detail_page(request: Request, namespace: str, name: str, db=Depends(get_db)):
+async def stack_detail_page(request: Request, namespace: str, name: str, db=Depends(get_db)):
     stack_data = db.get_stack(namespace, name)
     if not stack_data:
         raise HTTPException(404, "Not found")
@@ -92,7 +92,7 @@ def stack_detail_page(request: Request, namespace: str, name: str, db=Depends(ge
 
 
 @router.get("/stacks/{namespace}/{name}/{version}", response_class=HTMLResponse)
-def stack_version_page(request: Request, namespace: str, name: str, version: str,
+async def stack_version_page(request: Request, namespace: str, name: str, version: str,
                        db=Depends(get_db)):
     ver_data = db.get_stack_version(namespace, name, version)
     if not ver_data:
@@ -119,7 +119,7 @@ def stack_version_page(request: Request, namespace: str, name: str, version: str
 
 
 @router.get("/{namespace}", response_class=HTMLResponse)
-def namespace_page(request: Request, namespace: str, db=Depends(get_db)):
+async def namespace_page(request: Request, namespace: str, db=Depends(get_db)):
     ns_data = db.get_namespace_with_stacks(namespace)
     if not ns_data:
         raise HTTPException(404, "Not found")
