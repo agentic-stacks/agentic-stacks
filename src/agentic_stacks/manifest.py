@@ -49,6 +49,10 @@ def load_manifest(path: pathlib.Path) -> dict:
     manifest.setdefault("deprecations", [])
     manifest.setdefault("requires", {})
     manifest.setdefault("target", {"software": "", "versions": []})
+    manifest.setdefault("project", {})
+    manifest.setdefault("docs_sources", [])
+    if "extends" not in manifest:
+        manifest["extends"] = None
 
     manifest["full_name"] = f"{manifest['namespace']}/{manifest['name']}"
 
