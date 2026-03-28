@@ -1,0 +1,12 @@
+name = "agentic-stacks"
+main = "worker/main.py"
+compatibility_date = "2025-12-01"
+compatibility_flags = ["python_workers"]
+
+[vars]
+ENVIRONMENT = "production"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "agentic-stacks-registry"
+database_id = "TO_BE_CREATED"

@@ -1,0 +1,6 @@
+fastapi
+jinja2
+pydantic
+slowapi
+httpx
+mistune
