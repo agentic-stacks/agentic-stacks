@@ -9,4 +9,4 @@ ENVIRONMENT = "production"
 [[d1_databases]]
 binding = "DB"
 database_name = "agentic-stacks-registry"
-database_id = "TO_BE_CREATED"
+database_id = "PLACEHOLDER"
