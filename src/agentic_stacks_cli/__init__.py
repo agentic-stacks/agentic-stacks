@@ -6,6 +6,7 @@ import agentic_stacks
 from agentic_stacks_cli.commands.init import init
 from agentic_stacks_cli.commands.doctor import doctor
 from agentic_stacks_cli.commands.validate import validate
+from agentic_stacks_cli.commands.login import login
 
 
 @click.group()
@@ -18,6 +19,7 @@ def cli():
 cli.add_command(init)
 cli.add_command(doctor)
 cli.add_command(validate)
+cli.add_command(login)
 
 
 def main():
