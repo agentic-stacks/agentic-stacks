@@ -1,30 +1,32 @@
 """Namespace API routes."""
-import json
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from registry.database import get_db
-from registry.models import Namespace, Stack, StackVersion
+from registry.app import get_db
 from registry.schemas import NamespaceResponse, StackListItem
 
 router = APIRouter(prefix="/api/v1")
 
 
 @router.get("/namespaces/{namespace}", response_model=NamespaceResponse)
-def get_namespace(namespace: str, db: Session = Depends(get_db)):
-    ns = db.query(Namespace).filter_by(name=namespace).first()
-    if not ns:
+def get_namespace(namespace: str, db=Depends(get_db)):
+    ns_data = db.get_namespace_with_stacks(namespace)
+    if not ns_data:
         raise HTTPException(404, f"Namespace '{namespace}' not found")
-    stacks = db.query(Stack).filter_by(namespace_id=ns.id).all()
     items = []
-    for stack in stacks:
-        latest = db.query(StackVersion).filter_by(stack_id=stack.id)\
-            .order_by(StackVersion.published_at.desc()).first()
-        if latest:
+    for s in ns_data.get("stacks", []):
+        if s.get("version") is not None:
+            target_dict = {}
+            if s.get("target_software") or s.get("target_versions"):
+                target_dict = {"software": s.get("target_software", ""),
+                               "versions": s.get("target_versions", [])}
             items.append(StackListItem(
-                namespace=ns.name, name=stack.name, version=latest.version,
-                description=stack.description,
-                target={"software": latest.target_software,
-                        "versions": json.loads(latest.target_versions)},
+                namespace=s["namespace"], name=s["name"],
+                version=s["version"],
+                description=s.get("description", ""),
+                target=target_dict,
             ))
-    return NamespaceResponse(name=ns.name, github_org=ns.github_org,
-                             verified=ns.verified, stacks=items)
+    return NamespaceResponse(
+        name=ns_data["name"],
+        github_org=ns_data.get("github_org"),
+        verified=ns_data.get("verified", False),
+        stacks=items,
+    )

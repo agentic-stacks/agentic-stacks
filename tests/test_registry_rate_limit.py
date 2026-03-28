@@ -4,8 +4,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from registry.database import Base, get_db
+from registry.database import Base
 from registry.app import create_app
+from registry.db_sqlite import SQLiteDB
 
 
 @pytest.fixture
@@ -14,16 +15,10 @@ def client():
     Base.metadata.create_all(engine)
     TestSession = sessionmaker(bind=engine)
 
-    app = create_app(rate_limit="5/minute")
+    def factory():
+        return SQLiteDB(TestSession())
 
-    def override_get_db():
-        session = TestSession()
-        try:
-            yield session
-        finally:
-            session.close()
-
-    app.dependency_overrides[get_db] = override_get_db
+    app = create_app(rate_limit="5/minute", db_factory=factory)
     return TestClient(app)
 
 

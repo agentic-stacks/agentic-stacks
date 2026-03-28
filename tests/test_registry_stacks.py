@@ -2,12 +2,12 @@ import json
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 from unittest.mock import patch
-from registry.database import Base, get_db
+from registry.database import Base
 from registry.app import create_app
-from registry.models import Namespace, Stack, StackVersion
+from registry.db_sqlite import SQLiteDB
 
 
 @pytest.fixture
@@ -26,33 +26,30 @@ def db_session():
 
 @pytest.fixture
 def client(db_session):
-    app = create_app()
-    def override_get_db():
-        yield db_session
-    app.dependency_overrides[get_db] = override_get_db
+    app = create_app(rate_limit="1000/minute", db_factory=lambda: SQLiteDB(db_session))
     return TestClient(app)
 
 
 @pytest.fixture
 def seeded_db(db_session):
-    ns = Namespace(name="agentic-stacks", github_org="agentic-stacks", verified=True)
-    db_session.add(ns)
-    db_session.flush()
-    stack = Stack(namespace_id=ns.id, name="openstack", description="OpenStack deployment")
-    db_session.add(stack)
-    db_session.flush()
-    sv = StackVersion(
-        stack_id=stack.id, version="1.3.0", target_software="openstack",
-        target_versions=json.dumps(["2024.2", "2025.1"]),
-        skills=json.dumps([{"name": "deploy", "description": "Deploy"}]),
-        profiles=json.dumps({"categories": ["security"]}),
-        depends_on=json.dumps([]), deprecations=json.dumps([]),
-        requires=json.dumps({"tools": ["kolla-ansible"]}),
-        digest="sha256:abc123",
-        registry_ref="ghcr.io/agentic-stacks/openstack:1.3.0",
-    )
-    db_session.add(sv)
+    db = SQLiteDB(db_session)
+    db.create_namespace("agentic-stacks", "agentic-stacks")
+    # Set verified flag directly since abstraction doesn't expose it
+    from registry.models import Namespace
+    ns = db_session.query(Namespace).filter_by(name="agentic-stacks").first()
+    ns.verified = True
     db_session.commit()
+    db.create_stack("agentic-stacks", "openstack", "OpenStack deployment")
+    db.create_version("agentic-stacks", "openstack", {
+        "version": "1.3.0", "target_software": "openstack",
+        "target_versions": json.dumps(["2024.2", "2025.1"]),
+        "skills": json.dumps([{"name": "deploy", "description": "Deploy"}]),
+        "profiles": json.dumps({"categories": ["security"]}),
+        "depends_on": json.dumps([]), "deprecations": json.dumps([]),
+        "requires": json.dumps({"tools": ["kolla-ansible"]}),
+        "digest": "sha256:abc123",
+        "registry_ref": "ghcr.io/agentic-stacks/openstack:1.3.0",
+    })
     return db_session
 
 

@@ -8,15 +8,31 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
-from registry.routes.stacks import router as stacks_router
-from registry.routes.namespaces import router as namespaces_router
-from registry.routes.web import router as web_router
 from registry.config import RATE_LIMIT
 
 STATIC_DIR = pathlib.Path(__file__).parent / "static"
 
+_db_factory = None
 
-def create_app(rate_limit: str | None = None) -> FastAPI:
+
+def get_db():
+    if _db_factory is None:
+        raise RuntimeError("Database not configured")
+    db = _db_factory()
+    try:
+        yield db
+    finally:
+        if hasattr(db, "close"):
+            db.close()
+
+
+def create_app(rate_limit: str | None = None, db_factory=None) -> FastAPI:
+    global _db_factory
+
+    from registry.routes.stacks import router as stacks_router
+    from registry.routes.namespaces import router as namespaces_router
+    from registry.routes.web import router as web_router
+
     app = FastAPI(title="Agentic Stacks Registry", version="0.1.0")
 
     limit = rate_limit or RATE_LIMIT
@@ -31,7 +47,27 @@ def create_app(rate_limit: str | None = None) -> FastAPI:
     app.include_router(namespaces_router)
     app.include_router(web_router)
 
+    if db_factory:
+        _db_factory = db_factory
+
     return app
 
 
-app = create_app()
+def create_sqlite_app(rate_limit: str | None = None) -> FastAPI:
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import sessionmaker
+    from registry.database import Base
+    from registry.db_sqlite import SQLiteDB
+
+    engine = create_engine("sqlite:///./agentic_stacks_registry.db",
+                          connect_args={"check_same_thread": False})
+    Base.metadata.create_all(engine)
+    Session = sessionmaker(bind=engine)
+
+    def factory():
+        return SQLiteDB(Session())
+
+    return create_app(rate_limit=rate_limit, db_factory=factory)
+
+
+app = create_sqlite_app()
