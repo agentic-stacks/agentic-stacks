@@ -54,6 +54,7 @@ def create_app(rate_limit: str | None = None, db_factory=None) -> FastAPI:
 
 
 def create_sqlite_app(rate_limit: str | None = None) -> FastAPI:
+    """Create app with SQLite backend — for local dev."""
     from sqlalchemy import create_engine
     from sqlalchemy.orm import sessionmaker
     from registry.database import Base
@@ -68,6 +69,3 @@ def create_sqlite_app(rate_limit: str | None = None) -> FastAPI:
         return SQLiteDB(Session())
 
     return create_app(rate_limit=rate_limit, db_factory=factory)
-
-
-app = create_sqlite_app()
