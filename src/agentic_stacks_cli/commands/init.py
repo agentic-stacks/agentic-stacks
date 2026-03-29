@@ -52,14 +52,18 @@ def _init_operator_project(stack_dir: pathlib.Path, owner: str, name: str, repo_
 
     claude_md = (
         f"# {name}\n\n"
-        f"This project uses the `{name}` stack for domain expertise.\n\n"
+        f"This project uses agentic stacks for domain expertise.\n\n"
         f"## Setup\n\n"
         f"```bash\n"
-        f"agentic-stacks pull  # downloads the stack to .stacks/\n"
+        f"agentic-stacks pull  # downloads all stacks to .stacks/\n"
         f"```\n\n"
         f"## How This Works\n\n"
-        f"Read `.stacks/{name}/CLAUDE.md` for the stack's expertise — "
-        f"it knows how to deploy, configure, and operate this software.\n\n"
+        f"Read each stack's CLAUDE.md for domain expertise:\n\n"
+        f"```bash\n"
+        f"ls .stacks/*/CLAUDE.md\n"
+        f"```\n\n"
+        f"Each stack knows how to deploy, configure, and operate its software. "
+        f"Combine their expertise when stacks overlap (e.g., hardware + platform).\n\n"
         f"Work with the operator to build out their deployment. "
         f"Everything created here gets committed to this repo for reproducibility.\n"
     )

@@ -55,6 +55,15 @@ def test_create_claude_md_has_authoring_guide(tmp_path):
     assert "authoring" in claude.lower()
 
 
+def test_create_readme(tmp_path):
+    runner = CliRunner()
+    runner.invoke(cli, ["create", "myorg/my-stack", str(tmp_path / "my-stack")])
+    readme = (tmp_path / "my-stack" / "README.md").read_text()
+    assert "my-stack" in readme
+    assert "myorg/my-stack" in readme
+    assert "agentic-stacks pull" in readme
+
+
 def test_create_default_profiles(tmp_path):
     runner = CliRunner()
     runner.invoke(cli, ["create", "org/s", str(tmp_path / "s")])

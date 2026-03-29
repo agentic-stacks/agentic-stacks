@@ -113,4 +113,28 @@ def create(identity: str, path: str | None):
     )
     (stack_dir / "CLAUDE.md").write_text(claude_md)
 
+    readme = (
+        f"# {name}\n\n"
+        f"An [agentic stack](https://github.com/agentic-stacks/agentic-stacks) "
+        f"that teaches AI agents how to operate {name}.\n\n"
+        f"## Usage\n\n"
+        f"```bash\n"
+        f"# Create a project using this stack\n"
+        f"agentic-stacks init {owner}/{name} my-project\n"
+        f"cd my-project\n"
+        f"agentic-stacks pull\n"
+        f"```\n\n"
+        f"Then start Claude Code — it reads `.stacks/{name}/CLAUDE.md` "
+        f"and becomes an expert operator.\n\n"
+        f"## Composing with other stacks\n\n"
+        f"```bash\n"
+        f"# Add another stack to an existing project\n"
+        f"agentic-stacks pull {owner}/{name}\n"
+        f"```\n\n"
+        f"## Authoring\n\n"
+        f"See the [authoring guide](https://github.com/agentic-stacks/agentic-stacks/blob/main/docs/guides/authoring-a-stack.md) "
+        f"for how to build and extend this stack.\n"
+    )
+    (stack_dir / "README.md").write_text(readme)
+
     click.echo(f"Created stack '{owner}/{name}' at {stack_dir}")
