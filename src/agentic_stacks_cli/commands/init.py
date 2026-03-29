@@ -99,72 +99,33 @@ def _init_stack(stack_dir: pathlib.Path, name: str, namespace: str):
 
 def _init_operator_project(stack_dir: pathlib.Path, name: str, namespace: str,
                            from_stack: str):
-    """Scaffold an operator project that extends a base stack."""
+    """Scaffold a project that uses a stack."""
     from_path = pathlib.Path(from_stack)
+
     if from_path.is_dir():
-        manifest_path = from_path / "stack.yaml"
+        # Local path — read manifest directly
+        try:
+            parent = load_manifest(from_path / "stack.yaml")
+        except ManifestError as e:
+            raise click.ClickException(f"Invalid stack: {e}")
+        parent_name = parent["name"]
+        parent_namespace = parent["namespace"]
+        repo_url = parent.get("repository", "")
     else:
-        raise click.ClickException(
-            f"Stack path not found: {from_stack}. "
-            "Pass a local path to a stack directory."
-        )
-
-    try:
-        parent = load_manifest(manifest_path)
-    except ManifestError as e:
-        raise click.ClickException(f"Invalid base stack: {e}")
-
-    parent_name = parent["name"]
-    parent_namespace = parent["namespace"]
-    parent_version = parent["version"]
-    project_spec = parent.get("project", {})
-    per_env = project_spec.get("per_environment", [])
-
-    # Create directories
-    envs_dir = stack_dir / "environments"
-    envs_dir.mkdir()
-    (stack_dir / "state").mkdir()
-
-    # Scaffold example environment
-    example_env = envs_dir / "example"
-    example_env.mkdir()
-
-    example_config = {
-        "name": "example",
-        "description": f"Example environment — edit this for your deployment",
-    }
-    with open(example_env / "config.yml", "w") as f:
-        yaml.dump(example_config, f, default_flow_style=False, sort_keys=False)
-
-    # Create per-environment directories from parent's project spec
-    for item in per_env:
-        if item.endswith("/"):
-            (example_env / item.rstrip("/")).mkdir(exist_ok=True)
-
-    # Operator's stack.yaml with extends
-    operator_manifest = {
-        "name": name,
-        "namespace": namespace,
-        "version": "0.1.0",
-        "description": f"{name} — extends {parent_namespace}/{parent_name}",
-        "extends": {
-            "name": parent_name,
-            "namespace": parent_namespace,
-            "version": parent_version,
-        },
-        "depends_on": [],
-        "deprecations": [],
-    }
-    with open(stack_dir / "stack.yaml", "w") as f:
-        yaml.dump(operator_manifest, f, default_flow_style=False, sort_keys=False)
+        # Treat as GitHub reference — namespace/name or just name
+        if "/" in from_stack:
+            parent_namespace, parent_name = from_stack.split("/", 1)
+        else:
+            parent_namespace = "agentic-stacks"
+            parent_name = from_stack
+        repo_url = f"https://github.com/{parent_namespace}/{parent_name}"
 
     # stacks.lock
     lock = {
         "stacks": [{
             "name": f"{parent_namespace}/{parent_name}",
-            "version": parent_version,
-            "digest": "",
-            "registry": f"ghcr.io/{parent_namespace}/{parent_name}:{parent_version}",
+            "version": "latest",
+            "repository": repo_url,
         }]
     }
     with open(stack_dir / "stacks.lock", "w") as f:
@@ -173,45 +134,22 @@ def _init_operator_project(stack_dir: pathlib.Path, name: str, namespace: str,
     # .gitignore
     (stack_dir / ".gitignore").write_text(".stacks/\n*.db\n__pycache__/\n.venv/\n")
 
-    # CLAUDE.md — wires the agent to the stack's skills
-    skills_list = parent.get("skills", [])
-    skills_md = ""
-    if skills_list:
-        skills_md = "\n## Available Skills\n\n"
-        for skill in skills_list:
-            skills_md += f"- **{skill['name']}** — {skill.get('description', '')}\n"
-
-    per_env_md = ""
-    if per_env:
-        per_env_md = "\n## Environment Structure\n\nEach environment in `environments/` contains:\n\n"
-        per_env_md += "- `config.yml` — your deployment choices\n"
-        for item in per_env:
-            if item != "config.yml":
-                per_env_md += f"- `{item}` — edit as needed for your deployment\n"
-
+    # CLAUDE.md
     claude_md = (
         f"# {name}\n\n"
-        f"Operator project extending "
-        f"`{parent_namespace}/{parent_name}@{parent_version}`.\n\n"
+        f"This project uses the `{parent_name}` stack for domain expertise.\n\n"
         f"## Setup\n\n"
         f"```bash\n"
-        f"agentic-stacks pull  # downloads the base stack to .stacks/\n"
+        f"agentic-stacks pull  # downloads the stack to .stacks/\n"
         f"```\n\n"
         f"## How This Works\n\n"
-        f"The base stack's skills are in "
-        f"`.stacks/{parent_namespace}/{parent_name}/{parent_version}/skills/`. "
-        f"Read them to understand how to deploy, configure, and operate "
-        f"{parent.get('target', {}).get('software', 'this software')}.\n\n"
-        f"The stack's CLAUDE.md at "
-        f"`.stacks/{parent_namespace}/{parent_name}/{parent_version}/CLAUDE.md` "
-        f"is the primary guide — it describes what config is needed, "
-        f"where files go, and how the automation works.\n\n"
-        f"Work with the operator to build out each environment.\n"
-        f"{skills_md}"
-        f"{per_env_md}"
+        f"Read `.stacks/{parent_name}/CLAUDE.md` for the stack's expertise — "
+        f"it knows how to deploy, configure, and operate this software.\n\n"
+        f"Work with the operator to build out their deployment. "
+        f"Everything created here gets committed to this repo for reproducibility.\n"
     )
     (stack_dir / "CLAUDE.md").write_text(claude_md)
 
-    click.echo(f"Initialized operator project '{namespace}/{name}' at {stack_dir}")
-    click.echo(f"  Extends: {parent_namespace}/{parent_name}@{parent_version}")
-    click.echo(f"  Run 'agentic-stacks pull' to download the base stack.")
+    click.echo(f"Initialized project '{namespace}/{name}' at {stack_dir}")
+    click.echo(f"  Uses: {parent_namespace}/{parent_name}")
+    click.echo(f"  Run 'agentic-stacks pull' to download the stack.")
