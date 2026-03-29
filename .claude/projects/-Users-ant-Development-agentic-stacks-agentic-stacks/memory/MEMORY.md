@@ -1,0 +1,3 @@
+- [User profile](user_profile.md) — builds agentic-stacks platform, experienced developer
+- [Project status](project_status.md) — current phase and what's deployed
+- [CF Workers constraints](cf_workers_constraints.md) — async D1, no threads, lazy imports
