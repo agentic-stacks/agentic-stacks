@@ -11,6 +11,7 @@ from agentic_stacks_cli.commands.publish import publish
 from agentic_stacks_cli.commands.pull import pull
 from agentic_stacks_cli.commands.search import search
 from agentic_stacks_cli.commands.upgrade import upgrade
+from agentic_stacks_cli.commands.create import create
 
 
 @click.group()
@@ -21,6 +22,7 @@ def cli():
 
 
 cli.add_command(init)
+cli.add_command(create)
 cli.add_command(doctor)
 cli.add_command(validate)
 cli.add_command(login)
