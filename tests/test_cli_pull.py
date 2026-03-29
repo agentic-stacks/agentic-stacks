@@ -1,52 +1,82 @@
 import yaml
 from unittest.mock import patch, MagicMock
 from click.testing import CliRunner
+
 from agentic_stacks_cli import cli
 
 
-@patch("agentic_stacks_cli.commands.pull.pull_stack")
-@patch("agentic_stacks_cli.commands.pull.RegistryClient")
-def test_pull_by_name_and_version(mock_client_cls, mock_pull, tmp_path):
-    mock_client = MagicMock()
-    mock_client.get_stack.return_value = {
-        "name": "openstack", "namespace": "agentic-stacks", "version": "1.3.0",
-        "registry_ref": "ghcr.io/agentic-stacks/openstack:1.3.0"
-    }
-    mock_client_cls.return_value = mock_client
-    mock_pull.return_value = "sha256:abc123"
+@patch("agentic_stacks_cli.commands.pull._clone_or_pull")
+def test_pull_by_name(mock_clone, tmp_path):
     config_path = tmp_path / "config.yaml"
-    config_path.write_text(yaml.dump({"registry": "ghcr.io", "api_url": "https://example.com/api/v1"}))
+    config_path.write_text(yaml.dump({}))
     runner = CliRunner()
-    result = runner.invoke(cli, ["pull", "agentic-stacks/openstack@1.3.0",
-                                  "--dir", str(tmp_path), "--config", str(config_path)])
-    assert result.exit_code == 0
-    mock_pull.assert_called_once()
+    result = runner.invoke(cli, [
+        "pull", "openstack-kolla",
+        "--dir", str(tmp_path), "--config", str(config_path),
+    ])
+    assert result.exit_code == 0, result.output
+    mock_clone.assert_called_once_with(
+        "https://github.com/agentic-stacks/openstack-kolla",
+        tmp_path / ".stacks" / "openstack-kolla",
+    )
 
 
-@patch("agentic_stacks_cli.commands.pull.pull_stack")
-@patch("agentic_stacks_cli.commands.pull.RegistryClient")
-def test_pull_creates_lock_entry(mock_client_cls, mock_pull, tmp_path):
-    mock_client = MagicMock()
-    mock_client.get_stack.return_value = {
-        "name": "openstack", "namespace": "agentic-stacks", "version": "1.3.0",
-        "registry_ref": "ghcr.io/agentic-stacks/openstack:1.3.0"
-    }
-    mock_client_cls.return_value = mock_client
-    mock_pull.return_value = "sha256:abc123"
+@patch("agentic_stacks_cli.commands.pull._clone_or_pull")
+def test_pull_by_namespace_name(mock_clone, tmp_path):
     config_path = tmp_path / "config.yaml"
-    config_path.write_text(yaml.dump({"registry": "ghcr.io", "api_url": "https://example.com/api/v1"}))
+    config_path.write_text(yaml.dump({}))
     runner = CliRunner()
-    runner.invoke(cli, ["pull", "agentic-stacks/openstack@1.3.0",
-                         "--dir", str(tmp_path), "--config", str(config_path)])
+    result = runner.invoke(cli, [
+        "pull", "myorg/my-stack",
+        "--dir", str(tmp_path), "--config", str(config_path),
+    ])
+    assert result.exit_code == 0, result.output
+    mock_clone.assert_called_once_with(
+        "https://github.com/myorg/my-stack",
+        tmp_path / ".stacks" / "my-stack",
+    )
+
+
+@patch("agentic_stacks_cli.commands.pull._clone_or_pull")
+def test_pull_creates_lock_entry(mock_clone, tmp_path):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(yaml.dump({}))
+    runner = CliRunner()
+    runner.invoke(cli, [
+        "pull", "agentic-stacks/openstack-kolla",
+        "--dir", str(tmp_path), "--config", str(config_path),
+    ])
     lock = yaml.safe_load((tmp_path / "stacks.lock").read_text())
     assert len(lock["stacks"]) == 1
-    assert lock["stacks"][0]["name"] == "agentic-stacks/openstack"
-    assert lock["stacks"][0]["digest"] == "sha256:abc123"
+    assert lock["stacks"][0]["name"] == "agentic-stacks/openstack-kolla"
+    assert lock["stacks"][0]["repository"] == "https://github.com/agentic-stacks/openstack-kolla"
 
 
-def test_pull_invalid_reference(tmp_path):
+@patch("agentic_stacks_cli.commands.pull._clone_or_pull")
+def test_pull_from_lock(mock_clone, tmp_path):
     config_path = tmp_path / "config.yaml"
-    config_path.write_text(yaml.dump({"api_url": "https://example.com/api/v1"}))
+    config_path.write_text(yaml.dump({}))
+    lock = {
+        "stacks": [{
+            "name": "agentic-stacks/openstack-kolla",
+            "version": "latest",
+            "repository": "https://github.com/agentic-stacks/openstack-kolla",
+        }]
+    }
+    (tmp_path / "stacks.lock").write_text(yaml.dump(lock))
     runner = CliRunner()
-    result = runner.invoke(cli, ["pull", "invalid-ref", "--config", str(config_path)])
+    result = runner.invoke(cli, [
+        "pull", "--dir", str(tmp_path), "--config", str(config_path),
+    ])
+    assert result.exit_code == 0, result.output
+    mock_clone.assert_called_once()
+
+
+def test_pull_no_lock_no_ref(tmp_path):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(yaml.dump({}))
+    runner = CliRunner()
+    result = runner.invoke(cli, [
+        "pull", "--dir", str(tmp_path), "--config", str(config_path),
+    ])
     assert result.exit_code != 0
