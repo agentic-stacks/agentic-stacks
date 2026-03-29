@@ -1,24 +1,61 @@
 # Agentic Stacks
 
-A platform for packaging, versioning, distributing, and discovering composed domain expertise for AI agents.
+Domain expertise for AI agents. A stack is a git repo that teaches an agent how to operate in a specific domain — deploying OpenStack, bootstrapping Kubernetes, building a data pipeline, and more.
 
-A **stack** bundles skills (markdown knowledge), profiles (composable YAML configs), automation, and environment schemas into a versioned package that gives an agent deep competence in a domain — deploying OpenStack, bootstrapping Kubernetes, standing up a Rails app, building a data pipeline.
+## How It Works
 
-## Why
+A **stack** is captured expertise: someone (or an agent) reads all the docs, does it a few times, and distills that knowledge into structured markdown skills. When a user pulls a stack, their agent becomes an expert in that domain.
 
-There's no cross-domain, versioned, agent-queryable system for bundling domain expertise. Protocol layers exist (MCP, A2A). Single-tool registries exist (Smithery, Composio). Infrastructure package managers exist (Helm, Ansible Galaxy). But nobody owns the **composed capability pack** layer for AI agents. Agentic Stacks fills that gap.
+```bash
+# Start a project using a stack
+agentic-stacks init my-cloud --name my-cloud --namespace myorg --from openstack-kolla
+
+# Pull the stack's expertise
+cd my-cloud
+agentic-stacks pull
+
+# Now talk to the agent — it knows OpenStack
+# "I need an HA OpenStack cloud with OVN networking and Ceph storage
+#  on these 10 hosts..."
+```
+
+The agent reads the stack's skills, asks the right questions, and creates the deployment configs. Everything it creates goes into your repo — reproducible, version-controlled, yours.
 
 ## What a Stack Looks Like
 
+A stack is a git repo with this structure:
+
 ```
-my-stack/
-├── stack.yaml              # Manifest — identity, version, deps, contents
-├── skills/                 # Markdown brain — teaches the agent what to do
-├── profiles/               # Composable YAML building blocks (security, networking, etc.)
-├── environments/           # Declarative intent + JSON Schema validation
-├── src/                    # Automation code — the hands
-└── CLAUDE.md               # Agent entry point
+openstack-kolla/
+├── CLAUDE.md               # Agent entry point — the expertise guide
+├── stack.yaml              # Manifest — identity, skills, metadata
+├── skills/                 # Markdown knowledge — teaches the agent
+│   ├── deploy/
+│   ├── health-check/
+│   ├── config-build/
+│   └── diagnose/
+└── ...
 ```
+
+The `CLAUDE.md` is the product — it's what makes the agent an expert. The skills directory contains detailed knowledge the agent references during operations.
+
+## What a User's Project Looks Like
+
+After `init --from` and working with the agent:
+
+```
+my-cloud/
+├── .stacks/                # pulled stack repos (gitignored)
+│   └── openstack-kolla/    # the expertise
+├── CLAUDE.md               # points agent to the stack
+├── stacks.lock             # pinned stack references
+├── globals.yml             # kolla-ansible config (agent created this)
+├── inventory/hosts.yml     # ansible inventory (agent helped build this)
+├── config/                 # service overrides (agent guided these)
+└── ...
+```
+
+The output is native format for whatever tool the stack wraps. No custom formats — just the configs the tool expects.
 
 ## Install
 
@@ -26,101 +63,51 @@ my-stack/
 pip install agentic-stacks
 ```
 
-Or install with all extras for development:
-
-```bash
-pip install -e ".[dev,local,mcp]"
-```
-
 ## CLI
 
 ```bash
-# Create a new stack
-agentic-stacks init ./my-stack --name example --namespace my-org
+# Start a new project from a stack
+agentic-stacks init ./my-project --name my-project --namespace myorg --from openstack-kolla
 
-# Validate stack structure
-agentic-stacks doctor ./my-stack
+# Pull stacks into .stacks/
+agentic-stacks pull openstack-kolla
+agentic-stacks pull                    # pulls all from stacks.lock
 
-# Validate an environment against the stack schema
-agentic-stacks validate my-stack prod
-
-# Authenticate with GitHub
-agentic-stacks login
-
-# Publish to registry
-agentic-stacks publish --path ./my-stack
-
-# Pull a stack
-agentic-stacks pull my-org/example@1.0.0
-
-# Search the registry
+# Search for stacks
 agentic-stacks search kubernetes
+
+# Create a new stack
+agentic-stacks init ./my-stack --name my-stack --namespace myorg
+
+# Validate a stack
+agentic-stacks doctor --path ./my-stack
+
+# Register a stack with the registry
+agentic-stacks publish --path ./my-stack
 ```
 
-## Three Layers
+## Distribution
 
-### 1. Stack Specification + Thin Runtime
+Stacks are git repos. Pull clones them. No package managers, no tarballs.
 
-The spec defines what a stack is. The runtime (`agentic_stacks` Python package) handles the mechanical parts shared across all stacks: profile merging with enforced key protection, environment validation, config diffing, state tracking, and approval gates.
-
-### 2. Registry & Website
-
-[agentic-stacks.com](https://agentic-stacks.com) — browse, search, and pull versioned stacks. Distribution uses OCI registries (GHCR) via ORAS. Stacks are content-addressable, signed via Cosign/Sigstore, and immutable once published.
-
-### 3. Agent Discovery Protocol
-
-An MCP server that lets agents find and pull stacks at runtime:
+- **Curated stacks** live under the [`agentic-stacks`](https://github.com/agentic-stacks) GitHub org
+- **Third-party stacks** live in their own repos — pull by `org/name`
 
 ```bash
-agentic-stacks-mcp
+agentic-stacks pull openstack-kolla           # → github.com/agentic-stacks/openstack-kolla
+agentic-stacks pull someuser/their-stack      # → github.com/someuser/their-stack
 ```
 
-Exposes tools: `search_stacks`, `get_stack_info`, `get_skill`, `pull_stack`. An agent encounters a task it doesn't know how to do, searches the registry, pulls a stack, and loads the skills into context.
+## Registry & Website
 
-## Stack Manifest
-
-```yaml
-name: openstack-kolla
-namespace: agentic-stacks
-version: "1.3.0"
-description: "Agent-driven OpenStack deployment on kolla-ansible"
-
-target:
-  software: openstack
-  versions: ["2024.2", "2025.1"]
-
-skills:
-  - name: deploy
-    entry: skills/deploy/
-    description: "Wraps kolla-ansible lifecycle"
-
-profiles:
-  categories: [security, networking, storage, scale]
-  path: profiles/
-  merge_order: "security first (enforced), then declared order"
-
-environment_schema: environments/_schema.json
-
-depends_on:
-  - name: base
-    namespace: agentic-stacks
-    version: "^1.0"
-```
+[agentic-stacks.com](https://agentic-stacks.com) — browse and discover available stacks. The registry indexes stack metadata for search and display.
 
 ## Development
 
 ```bash
-# Install dev dependencies
 pip install -e ".[dev,local,mcp]"
-
-# Run tests
 pytest -v --tb=short
-
-# Run local registry server
 uvicorn registry.local:app --reload
-
-# Build
-pip install build && python -m build
 ```
 
 ## License
