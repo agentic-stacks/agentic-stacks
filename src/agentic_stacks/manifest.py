@@ -50,6 +50,7 @@ def load_manifest(path: pathlib.Path) -> dict:
     manifest.setdefault("requires", {})
     manifest.setdefault("target", {"software": "", "versions": []})
     manifest.setdefault("project", {})
+    manifest.setdefault("repository", "")
     manifest.setdefault("docs_sources", [])
     if "extends" not in manifest:
         manifest["extends"] = None
