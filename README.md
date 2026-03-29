@@ -1,6 +1,12 @@
 # Agentic Stacks
 
-Domain expertise for AI agents. A stack is a git repo that teaches an agent how to operate in a specific domain — deploying OpenStack, bootstrapping Kubernetes, building a data pipeline, and more.
+Domain expertise for AI agents. A stack is a git repo that teaches an agent how to operate in a specific domain — deploying OpenStack, bootstrapping Kubernetes, managing Dell hardware, and more.
+
+<p align="center">
+  <img src="docs/images/i-know-kung-fu.jpg" alt="I know kung fu" width="600">
+</p>
+
+Load skills into your AI agent like Neo downloads kung fu. One command and your agent knows OpenStack, Kubernetes, or whatever domain you need.
 
 ## How It Works
 
@@ -8,9 +14,7 @@ A **stack** is captured expertise: someone (or an agent) reads all the docs, doe
 
 ```bash
 # Start a project using a stack
-agentic-stacks init my-cloud --name my-cloud --namespace myorg --from openstack-kolla
-
-# Pull the stack's expertise
+agentic-stacks init agentic-stacks/openstack-kolla my-cloud
 cd my-cloud
 agentic-stacks pull
 
@@ -20,6 +24,17 @@ agentic-stacks pull
 ```
 
 The agent reads the stack's skills, asks the right questions, and creates the deployment configs. Everything it creates goes into your repo — reproducible, version-controlled, yours.
+
+### Stack multiple domains
+
+Need hardware expertise alongside your platform stack? Pull in more skills:
+
+```bash
+agentic-stacks pull dell-hardware    # now it knows Dell servers too
+agentic-stacks list                  # see what's loaded
+```
+
+The agent reads all stacks and combines their expertise — hardware provisioning, platform deployment, and everything in between.
 
 ## What a Stack Looks Like
 
@@ -41,13 +56,14 @@ The `CLAUDE.md` is the product — it's what makes the agent an expert. The skil
 
 ## What a User's Project Looks Like
 
-After `init --from` and working with the agent:
+After `init` and working with the agent:
 
 ```
 my-cloud/
 ├── .stacks/                # pulled stack repos (gitignored)
-│   └── openstack-kolla/    # the expertise
-├── CLAUDE.md               # points agent to the stack
+│   ├── openstack-kolla/    # platform expertise
+│   └── dell-hardware/      # hardware expertise
+├── CLAUDE.md               # points agent to .stacks/*/CLAUDE.md
 ├── stacks.lock             # pinned stack references
 ├── globals.yml             # kolla-ansible config (agent created this)
 ├── inventory/hosts.yml     # ansible inventory (agent helped build this)
@@ -67,17 +83,21 @@ pip install agentic-stacks
 
 ```bash
 # Start a new project from a stack
-agentic-stacks init ./my-project --name my-project --namespace myorg --from openstack-kolla
+agentic-stacks init agentic-stacks/openstack-kolla my-project
 
 # Pull stacks into .stacks/
-agentic-stacks pull openstack-kolla
 agentic-stacks pull                    # pulls all from stacks.lock
+agentic-stacks pull dell-hardware      # add another stack
+
+# Manage stacks
+agentic-stacks list                    # see loaded stacks
+agentic-stacks remove dell-hardware    # remove a stack
 
 # Search for stacks
 agentic-stacks search kubernetes
 
-# Create a new stack
-agentic-stacks init ./my-stack --name my-stack --namespace myorg
+# Create a new stack (for stack authors)
+agentic-stacks create my-org/my-stack
 
 # Validate a stack
 agentic-stacks doctor --path ./my-stack
