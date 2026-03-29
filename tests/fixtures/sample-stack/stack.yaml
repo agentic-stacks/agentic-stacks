@@ -1,5 +1,5 @@
 name: sample-stack
-namespace: test
+owner: test
 version: "1.0.0"
 description: "A sample stack for testing"
 
