@@ -42,28 +42,42 @@ Four packages under `src/`, built with hatchling:
 
 Stacks are git repos. No OCI/ORAS.
 
+- `init owner/name [path]` creates a user project with `stacks.lock`, `.gitignore`, and a `CLAUDE.md` pointing to `.stacks/*/CLAUDE.md`
 - `pull` clones a stack's GitHub repo into `.stacks/<name>/` (or `git pull` to update)
+- `pull <ref>` adds a new stack to the project and updates `stacks.lock`
+- `list` shows all stacks in the current project and their pull status
+- `remove <ref>` removes a stack from `stacks.lock` and deletes its `.stacks/` directory
 - `publish` registers the stack's repo URL + metadata with the registry API
 - `search` queries the registry API
-- `init --from <name>` creates a user project with `stacks.lock`, `.gitignore`, and a `CLAUDE.md` pointing to `.stacks/<name>/CLAUDE.md`
+- `create owner/name [path]` scaffolds a new stack (for stack authors)
 
 Default GitHub org is `agentic-stacks`. `pull openstack-kolla` clones from `github.com/agentic-stacks/openstack-kolla`.
 
 ## User Projects
 
-`agentic-stacks init my-project --from openstack-kolla` creates:
+Projects can compose multiple stacks for cross-domain expertise. For example, combining a hardware stack with a platform stack:
+
+```bash
+agentic-stacks init agentic-stacks/openstack-kolla my-deployment
+cd my-deployment
+agentic-stacks pull dell-hardware    # add a second stack
+agentic-stacks list                  # see all stacks
+```
+
+This creates:
 
 ```
-my-project/
+my-deployment/
 ├── .stacks/              # pulled stack repos (gitignored)
-│   └── openstack-kolla/  # the stack's skills, CLAUDE.md, etc.
-├── CLAUDE.md             # points agent to .stacks/ for expertise
+│   ├── openstack-kolla/  # platform expertise
+│   └── dell-hardware/    # hardware expertise
+├── CLAUDE.md             # points agent to .stacks/*/CLAUDE.md
 ├── stacks.lock           # pinned stack references
 ├── .gitignore
 └── ... (whatever the agent creates — native tool configs)
 ```
 
-The agent reads `.stacks/openstack-kolla/CLAUDE.md` to learn the domain, then helps the user build their deployment. The output is native format for whatever tool the stack wraps (kolla-ansible configs, Talos machine configs, etc.).
+The agent reads each stack's CLAUDE.md (via `.stacks/*/CLAUDE.md`) and combines their expertise. The output is native format for whatever tools the stacks wrap.
 
 ## Database Layer
 

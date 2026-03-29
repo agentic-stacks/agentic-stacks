@@ -12,11 +12,14 @@ router = APIRouter(prefix="/api/v1")
 
 @router.get("/stacks", response_model=StackListResponse)
 async def list_stacks(
-    q: str | None = None, target: str | None = None, namespace: str | None = None,
+    q: str | None = None, target: str | None = None,
+    namespace: str | None = None, owner: str | None = None,
     sort: str = "updated", page: int = 1, per_page: int = 20,
     db=Depends(get_db),
 ):
-    items, total = await db.list_stacks(q=q, namespace=namespace, target=target,
+    # Accept 'owner' as preferred alias for 'namespace'
+    ns_filter = owner or namespace
+    items, total = await db.list_stacks(q=q, namespace=ns_filter, target=target,
                                   sort=sort, page=page, per_page=per_page)
     stack_items = []
     for item in items:
@@ -25,7 +28,8 @@ async def list_stacks(
             target_dict = {"software": item.get("target_software", ""),
                            "versions": item.get("target_versions", [])}
         stack_items.append(StackListItem(
-            namespace=item["namespace"], name=item["name"],
+            namespace=item["namespace"], owner=item.get("owner", item["namespace"]),
+            name=item["name"],
             version=item.get("version") or "0.0.0",
             description=item.get("description", ""),
             target=target_dict,
@@ -62,20 +66,25 @@ async def register_stack(
         username = verify_github_token(token)
     except AuthError:
         raise HTTPException(401, "Invalid GitHub token")
+    # Accept 'owner' as preferred alias for 'namespace'
+    ns = body.owner or body.namespace
+    if not ns:
+        raise HTTPException(422, "Either 'owner' or 'namespace' is required")
+
     user_orgs = get_github_orgs(token, include_user=True)
-    if body.namespace not in user_orgs:
-        raise HTTPException(403, f"You don't have access to namespace '{body.namespace}'")
+    if ns not in user_orgs:
+        raise HTTPException(403, f"You don't have access to namespace '{ns}'")
 
-    ns_data = await db.get_namespace_with_stacks(body.namespace)
+    ns_data = await db.get_namespace_with_stacks(ns)
     if not ns_data:
-        await db.create_namespace(body.namespace, body.namespace)
+        await db.create_namespace(ns, ns)
 
-    stack_data = await db.get_stack(body.namespace, body.name)
+    stack_data = await db.get_stack(ns, body.name)
     if not stack_data:
-        await db.create_stack(body.namespace, body.name, body.description)
+        await db.create_stack(ns, body.name, body.description)
 
-    if await db.version_exists(body.namespace, body.name, body.version):
-        raise HTTPException(409, f"Version '{body.version}' already exists for '{body.namespace}/{body.name}'")
+    if await db.version_exists(ns, body.name, body.version):
+        raise HTTPException(409, f"Version '{body.version}' already exists for '{ns}/{body.name}'")
 
     version_data = {
         "version": body.version,
@@ -89,13 +98,14 @@ async def register_stack(
         "digest": body.digest,
         "registry_ref": body.registry_ref,
     }
-    result = await db.create_version(body.namespace, body.name, version_data)
+    result = await db.create_version(ns, body.name, version_data)
     return _to_version_response(result)
 
 
 def _to_version_response(d: dict) -> StackVersionResponse:
     return StackVersionResponse(
-        namespace=d["namespace"], name=d["name"], version=d["version"],
+        namespace=d["namespace"], owner=d.get("owner", d["namespace"]),
+        name=d["name"], version=d["version"],
         description=d.get("description", ""),
         target={"software": d.get("target_software", ""),
                 "versions": d.get("target_versions", [])},

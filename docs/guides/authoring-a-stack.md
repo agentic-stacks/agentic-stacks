@@ -6,10 +6,11 @@ This guide covers how to design and build a comprehensive stack. It extracts pat
 
 ## Anatomy of a Stack
 
-Every stack has three required files at the root:
+Every stack has these files at the root:
 
 ```
 my-stack/
+├── README.md       # Repo landing page — usage, composability, authoring link
 ├── CLAUDE.md       # Agent entry point — persona, rules, routing
 ├── stack.yaml      # Machine-readable manifest
 └── skills/         # Operational knowledge, organized by phase
@@ -23,10 +24,10 @@ Optional:
 ## Starting a Stack
 
 ```bash
-agentic-stacks init ./my-stack --name my-stack --namespace my-org
+agentic-stacks create my-org/my-stack
 ```
 
-This scaffolds the basic structure. The rest of this guide helps you fill it with high-quality operational knowledge.
+This scaffolds the full structure including `README.md`, `CLAUDE.md`, `stack.yaml`, and the standard directories. The rest of this guide helps you fill it with high-quality operational knowledge.
 
 ---
 
@@ -152,7 +153,7 @@ The machine-readable manifest. Key fields:
 
 ```yaml
 name: my-stack
-namespace: my-org
+owner: my-org
 version: 0.1.0
 description: >
   One paragraph describing what this stack teaches agents to operate.
@@ -434,7 +435,27 @@ Before publishing your stack:
 - [ ] Known issues are documented for supported versions
 - [ ] Decision guides exist for any "choose between options" scenarios
 - [ ] Cross-references between skills use correct paths
+- [ ] `README.md` describes what the stack does and how to use it
 - [ ] The stack has been tested by having an agent use it end-to-end
+
+---
+
+## Designing for Composition
+
+Operators can pull multiple stacks into a single project. For example, a Dell hardware stack and an OpenStack stack working together:
+
+```bash
+agentic-stacks init agentic-stacks/openstack-kolla my-cloud
+cd my-cloud
+agentic-stacks pull dell-hardware
+```
+
+The agent reads all stacks via `.stacks/*/CLAUDE.md` and combines their expertise. To make your stack compose well:
+
+- **Stay in your domain.** A hardware stack shouldn't reimplement networking concepts that a platform stack already covers.
+- **Use `depends_on` in stack.yaml** to declare stacks that pair well with yours (e.g., a storage stack that expects a Kubernetes stack).
+- **Avoid conflicting file outputs.** If two stacks both generate `/etc/foo.conf`, operators will have a bad time. Document what files your stack creates in `project.structure`.
+- **Name skills distinctively.** When an agent loads multiple stacks, skill names should make it clear which domain they belong to.
 
 ---
 

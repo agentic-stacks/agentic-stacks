@@ -45,7 +45,7 @@ async def homepage(request: Request, db=Depends(get_db)):
     for s in featured:
         if s.get("version") is not None:
             featured_dicts.append({
-                "namespace": s["namespace"], "name": s["name"],
+                "namespace": s["namespace"], "owner": s.get("owner", s["namespace"]), "name": s["name"],
                 "version": s["version"], "description": s.get("description", ""),
             })
     return templates.TemplateResponse(request, "home.html", {"featured_stacks": featured_dicts})
@@ -60,7 +60,7 @@ async def stacks_page(request: Request, q: str = "", db=Depends(get_db)):
     for s in items:
         if s.get("version") is not None:
             stacks_list.append({
-                "namespace": s["namespace"], "name": s["name"],
+                "namespace": s["namespace"], "owner": s.get("owner", s["namespace"]), "name": s["name"],
                 "version": s["version"], "description": s.get("description", ""),
             })
     return templates.TemplateResponse(request, "stacks.html", {"stacks": stacks_list, "query": q})
@@ -75,7 +75,7 @@ async def search_fragment(request: Request, q: str = "", db=Depends(get_db)):
     for s in items:
         if s.get("version") is not None:
             stacks_list.append({
-                "namespace": s["namespace"], "name": s["name"],
+                "namespace": s["namespace"], "owner": s.get("owner", s["namespace"]), "name": s["name"],
                 "version": s["version"], "description": s.get("description", ""),
             })
     return templates.TemplateResponse(request, "_search_results.html", {"stacks": stacks_list, "query": q})
@@ -150,7 +150,7 @@ async def namespace_page(request: Request, namespace: str, db=Depends(get_db)):
     for s in ns_data.get("stacks", []):
         if s.get("version") is not None:
             items.append({
-                "namespace": s["namespace"], "name": s["name"],
+                "namespace": s["namespace"], "owner": s.get("owner", s["namespace"]), "name": s["name"],
                 "version": s["version"], "description": s.get("description", ""),
             })
     return templates.TemplateResponse(request, "namespace.html", {"ns": ns_obj, "stacks": items})

@@ -7,7 +7,8 @@ class SkillInfo(BaseModel):
 
 class DependencyInfo(BaseModel):
     name: str
-    namespace: str
+    namespace: str = ""
+    owner: str = ""
     version: str
 
 class DeprecationInfo(BaseModel):
@@ -18,7 +19,8 @@ class DeprecationInfo(BaseModel):
     reason: str = ""
 
 class StackRegisterRequest(BaseModel):
-    namespace: str
+    namespace: str = ""
+    owner: str = ""
     name: str
     version: str
     description: str = ""
@@ -33,6 +35,7 @@ class StackRegisterRequest(BaseModel):
 
 class StackVersionResponse(BaseModel):
     namespace: str
+    owner: str = ""
     name: str
     version: str
     description: str = ""
@@ -48,6 +51,7 @@ class StackVersionResponse(BaseModel):
 
 class StackListItem(BaseModel):
     namespace: str
+    owner: str = ""
     name: str
     version: str
     description: str = ""

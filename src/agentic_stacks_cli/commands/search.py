@@ -24,11 +24,11 @@ def search(query: str, config_path: str | None):
         return
     click.echo(f"Found {len(results)} stack(s):\n")
     for stack in results:
-        ns = stack.get("namespace", "")
+        owner = stack.get("owner") or stack.get("namespace", "")
         name = stack.get("name", "")
         version = stack.get("version", "")
         desc = stack.get("description", "")
-        click.echo(f"  {ns}/{name}@{version}")
+        click.echo(f"  {owner}/{name}@{version}")
         if desc:
             click.echo(f"    {desc}")
         click.echo()

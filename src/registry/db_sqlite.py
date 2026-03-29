@@ -29,6 +29,7 @@ class SQLiteDB:
     def _version_to_dict(self, ns_name: str, stack: Stack, sv: StackVersion) -> dict:
         return {
             "namespace": ns_name,
+            "owner": ns_name,
             "name": stack.name,
             "description": stack.description or "",
             "version": sv.version,
@@ -49,6 +50,7 @@ class SQLiteDB:
     def _stack_summary(self, ns_name: str, stack: Stack, sv: StackVersion | None) -> dict:
         result = {
             "namespace": ns_name,
+            "owner": ns_name,
             "name": stack.name,
             "description": stack.description or "",
             "updated_at": stack.updated_at.isoformat() if stack.updated_at else None,
@@ -215,6 +217,7 @@ class SQLiteDB:
         self._session.refresh(stack)
         return {
             "namespace": namespace,
+            "owner": namespace,
             "name": stack.name,
             "description": stack.description,
             "created_at": stack.created_at.isoformat() if stack.created_at else None,

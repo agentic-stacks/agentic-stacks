@@ -4,7 +4,7 @@ import pathlib
 import yaml
 
 
-REQUIRED_FIELDS = ["name", "namespace", "version", "description"]
+REQUIRED_FIELDS = ["name", "version", "description"]
 
 
 class ManifestError(Exception):
@@ -43,6 +43,19 @@ def load_manifest(path: pathlib.Path) -> dict:
             f"Manifest {path} missing required fields: {', '.join(missing)}"
         )
 
+    # owner field: prefer 'owner', fall back to 'namespace' for backwards compat
+    if "owner" not in manifest:
+        if "namespace" in manifest:
+            manifest["owner"] = manifest["namespace"]
+        else:
+            raise ManifestError(
+                f"Manifest {path} missing required field: owner "
+                f"(or 'namespace' for backwards compatibility)"
+            )
+
+    # Keep namespace in sync for any code that still reads it
+    manifest["namespace"] = manifest["owner"]
+
     manifest.setdefault("skills", [])
     manifest.setdefault("profiles", {"categories": [], "path": "profiles/"})
     manifest.setdefault("depends_on", [])
@@ -55,6 +68,6 @@ def load_manifest(path: pathlib.Path) -> dict:
     if "extends" not in manifest:
         manifest["extends"] = None
 
-    manifest["full_name"] = f"{manifest['namespace']}/{manifest['name']}"
+    manifest["full_name"] = f"{manifest['owner']}/{manifest['name']}"
 
     return manifest

@@ -40,7 +40,7 @@ def doctor(path: str):
 def _doctor_operator_project(stack_dir, manifest, extends, warnings):
     """Validate an operator project that extends a base stack."""
     ext_name = extends.get("name", "")
-    ext_namespace = extends.get("namespace", "")
+    ext_namespace = extends.get("owner", extends.get("namespace", ""))
     ext_version = extends.get("version", "")
     click.echo(f"  extends: {ext_namespace}/{ext_name}@{ext_version}")
 
