@@ -5,6 +5,7 @@ compatibility_flags = ["python_workers"]
 
 [vars]
 ENVIRONMENT = "production"
+COMING_SOON = "true"
 
 [observability]
 enabled = true

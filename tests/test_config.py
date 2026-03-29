@@ -6,7 +6,7 @@ def test_default_config():
     cfg = default_config()
     assert cfg["registry"] == "ghcr.io"
     assert cfg["default_namespace"] == "agentic-stacks"
-    assert cfg["api_url"] == "https://agentic-stacks.com/api/v1"
+    assert cfg["api_url"] == "https://agentic-stacks.ajmesserli.workers.dev/api/v1"
     assert cfg["token"] is None
 
 
