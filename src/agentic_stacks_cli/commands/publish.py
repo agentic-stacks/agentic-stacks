@@ -28,7 +28,7 @@ def publish(path: str, config_path: str | None):
         raise click.ClickException(f"Invalid stack: {e}")
 
     name = manifest["name"]
-    namespace = manifest["namespace"]
+    owner = manifest["owner"]
     version = manifest["version"]
     repository = manifest.get("repository", "")
 
@@ -38,7 +38,7 @@ def publish(path: str, config_path: str | None):
             "(e.g., https://github.com/your-org/your-stack)"
         )
 
-    click.echo(f"Publishing {namespace}/{name}@{version}...")
+    click.echo(f"Publishing {owner}/{name}@{version}...")
     click.echo(f"  Repository: {repository}")
 
     api_url = cfg.get("api_url", "")
@@ -46,7 +46,7 @@ def publish(path: str, config_path: str | None):
         client = RegistryClient(api_url=api_url, token=token)
         try:
             client.register_stack({
-                "namespace": namespace, "name": name, "version": version,
+                "namespace": owner, "name": name, "version": version,
                 "description": manifest.get("description", ""),
                 "target": manifest.get("target", {}),
                 "skills": manifest.get("skills", []),
@@ -61,4 +61,4 @@ def publish(path: str, config_path: str | None):
         except Exception as e:
             click.echo(f"  Warning: Could not register with registry: {e}")
 
-    click.echo(f"\nPublished {namespace}/{name}@{version}")
+    click.echo(f"\nPublished {owner}/{name}@{version}")
