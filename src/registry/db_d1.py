@@ -46,8 +46,10 @@ def _row_to_version_dict(row):
     """Convert a D1 row to a full version dict."""
     if not row:
         return None
+    ns = row.get("ns_name", "")
     return {
-        "namespace": row.get("ns_name", ""),
+        "namespace": ns,
+        "owner": ns,
         "name": row.get("stack_name", row.get("name", "")),
         "description": row.get("description", ""),
         "version": row.get("version", ""),
@@ -68,8 +70,10 @@ def _row_to_summary(row):
     """Convert a D1 row to a stack list summary."""
     if not row:
         return None
+    ns = row.get("ns_name", "")
     return {
-        "namespace": row.get("ns_name", ""),
+        "namespace": ns,
+        "owner": ns,
         "name": row.get("stack_name", row.get("name", "")),
         "description": row.get("description", ""),
         "version": row.get("version", "0.0.0"),

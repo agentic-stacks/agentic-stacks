@@ -46,7 +46,7 @@ def publish(path: str, config_path: str | None):
         client = RegistryClient(api_url=api_url, token=token)
         try:
             client.register_stack({
-                "namespace": owner, "name": name, "version": version,
+                "owner": owner, "name": name, "version": version,
                 "description": manifest.get("description", ""),
                 "target": manifest.get("target", {}),
                 "skills": manifest.get("skills", []),

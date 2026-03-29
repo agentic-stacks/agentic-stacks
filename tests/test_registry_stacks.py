@@ -151,3 +151,39 @@ def test_pagination(client, seeded_db):
     data = resp.json()
     assert data["page"] == 1
     assert data["per_page"] == 10
+
+
+def test_list_stacks_includes_owner(client, seeded_db):
+    resp = client.get("/api/v1/stacks")
+    data = resp.json()
+    stack = data["stacks"][0]
+    assert stack["owner"] == "agentic-stacks"
+    assert stack["owner"] == stack["namespace"]
+
+
+def test_get_stack_includes_owner(client, seeded_db):
+    resp = client.get("/api/v1/stacks/agentic-stacks/openstack")
+    data = resp.json()
+    assert data["owner"] == "agentic-stacks"
+    assert data["owner"] == data["namespace"]
+
+
+def test_list_stacks_filter_by_owner(client, seeded_db):
+    resp = client.get("/api/v1/stacks", params={"owner": "agentic-stacks"})
+    assert resp.json()["total"] == 1
+    resp = client.get("/api/v1/stacks", params={"owner": "nonexistent"})
+    assert resp.json()["total"] == 0
+
+
+@patch("registry.routes.stacks.verify_github_token", return_value="testuser")
+@patch("registry.routes.stacks.get_github_orgs", return_value=["my-org"])
+def test_register_stack_with_owner(mock_orgs, mock_verify, client):
+    resp = client.post("/api/v1/stacks", json={
+        "owner": "my-org", "name": "my-stack", "version": "1.0.0",
+        "description": "Test", "digest": "sha256:abc",
+        "registry_ref": "https://github.com/my-org/my-stack",
+    }, headers={"Authorization": "Bearer ghp_test"})
+    assert resp.status_code == 201
+    data = resp.json()
+    assert data["owner"] == "my-org"
+    assert data["namespace"] == "my-org"

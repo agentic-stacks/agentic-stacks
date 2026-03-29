@@ -19,7 +19,8 @@ async def get_namespace(namespace: str, db=Depends(get_db)):
                 target_dict = {"software": s.get("target_software", ""),
                                "versions": s.get("target_versions", [])}
             items.append(StackListItem(
-                namespace=s["namespace"], name=s["name"],
+                namespace=s["namespace"], owner=s.get("owner", s["namespace"]),
+                name=s["name"],
                 version=s["version"],
                 description=s.get("description", ""),
                 target=target_dict,
