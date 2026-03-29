@@ -188,7 +188,79 @@ depends_on: []
 
 ---
 
-## Step 4: Write Skill Content
+## Step 4: Research and Verify Against Official Docs
+
+A stack is only as good as its accuracy. Before writing any skill, you must fetch and verify against the target software's official documentation. Agents using your stack will execute commands verbatim — a wrong flag name or outdated YAML field can break a production cluster.
+
+### Find the Documentation Index
+
+Most documentation sites publish an index or sitemap. Look for:
+
+- **`/llms.txt`** — an emerging standard for AI-readable doc indexes (e.g., `https://docs.siderolabs.com/llms.txt`)
+- **`/sitemap.xml`** — standard sitemap
+- **API docs at `/api/`** — for tools with HTTP APIs
+- **GitHub repo** — the source markdown files are often more accurate than rendered docs
+
+Start by fetching the index to understand what pages exist and where the canonical URLs are. Documentation sites restructure frequently — the URL you found in a blog post may redirect.
+
+### Verify Every Command and Config Field
+
+For each skill you write:
+
+1. **Fetch the relevant official doc page** before writing content
+2. **Copy exact commands** from the docs — do not reconstruct from memory
+3. **Verify YAML field names** — `certSANs` not `certSans`, `kubeProxyReplacement` not `kube-proxy-replacement`
+4. **Check flag names** — `--insecure` vs `--dangerous` vs `--skip-verify` vary between tools and versions
+5. **Note version-specific behavior** — commands and config fields change between releases
+
+### What to Extract from Official Docs
+
+When reading a doc page, extract:
+
+| Category | Examples |
+|---|---|
+| **Exact commands** | `talosctl gen config`, `helm install` with all flags |
+| **Config structure** | YAML schema, required vs optional fields |
+| **Default values** | What happens if you omit a field |
+| **Warnings and caveats** | "Only run this once", "This is destructive" |
+| **Order of operations** | What must happen before what |
+| **Port numbers and protocols** | Network requirements for firewall rules |
+| **Version compatibility** | Which versions of A work with which versions of B |
+| **Known issues** | Bugs, workarounds, and fixes |
+
+### Cross-Reference Multiple Sources
+
+Official docs sometimes lag behind reality. Cross-reference with:
+
+- **Release notes** — the most current source of breaking changes and new features
+- **GitHub issues** — confirmed bugs with workarounds
+- **CLI help output** — `tool --help` is always accurate for the installed version
+- **Source code** — the ultimate source of truth when docs are ambiguous
+
+### Example: Research Workflow
+
+When building the kubernetes-talos stack, each skill was written by:
+
+1. Fetching `docs.siderolabs.com/llms.txt` to find all available pages
+2. Fetching the specific topic page (e.g., deploying Cilium, upgrading Talos)
+3. Extracting exact commands, YAML snippets, warnings, and version notes
+4. Cross-referencing with release notes for version-specific behavior
+5. Writing the skill content with verified information
+6. Including the doc URL as a reference for future updates
+
+### Keep Content Fresh
+
+Documentation is a snapshot in time. Include version markers in your content:
+
+```markdown
+> **Talos v1.9+**: `systemd-udev` replaces `eudev`. Network interface names may change.
+```
+
+And maintain version-specific known issues files that can be updated independently of the main skill content.
+
+---
+
+## Step 5: Write Skill Content
 
 ### Writing Style for Agent Consumption
 
@@ -286,7 +358,7 @@ Reference these from CLAUDE.md critical rules: "Always check known issues before
 
 ---
 
-## Step 5: Decision Guides and Compatibility Matrices
+## Step 6: Decision Guides and Compatibility Matrices
 
 For stacks where operators must choose between components (CNI, storage, ingress, etc.), provide structured decision aids:
 
@@ -325,7 +397,7 @@ Place in `skills/reference/compatibility/`. Map which versions of components wor
 
 ---
 
-## Step 6: Validate Your Stack
+## Step 7: Validate Your Stack
 
 Before publishing, verify:
 
