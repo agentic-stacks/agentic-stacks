@@ -8,6 +8,7 @@ import click
 
 from agentic_stacks_cli.config import load_config
 from agentic_stacks_cli.lock import read_lock, write_lock, add_to_lock
+from agentic_stacks_cli.registry_repo import ensure_registry, load_formula
 
 
 DEFAULT_ORG = "agentic-stacks"
@@ -69,7 +70,22 @@ def pull(reference: str | None, target_dir: str, config_path: str | None):
         return
 
     namespace, name = _parse_ref(reference)
-    repo_url = f"{GITHUB_BASE}/{namespace}/{name}"
+
+    # Try to resolve from registry formula
+    repo_url = None
+    try:
+        registry_path = ensure_registry(
+            repo_url=cfg.get("registry_repo", "https://github.com/agentic-stacks/registry"),
+        )
+        formula = load_formula(registry_path, namespace, name)
+        repo_url = formula["repository"]
+    except (FileNotFoundError, Exception):
+        pass
+
+    # Fall back to GitHub URL convention
+    if not repo_url:
+        repo_url = f"{GITHUB_BASE}/{namespace}/{name}"
+
     dest = target / ".stacks" / name
 
     click.echo(f"Pulling {namespace}/{name}...")
