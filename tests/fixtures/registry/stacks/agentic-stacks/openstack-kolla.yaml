@@ -1,0 +1,35 @@
+name: openstack-kolla
+owner: agentic-stacks
+version: "0.1.0"
+repository: https://github.com/agentic-stacks/openstack-kolla
+tag: v0.1.0
+sha256: ""
+description: >
+  Agent-driven OpenStack cloud deployment and operations using kolla-ansible.
+target:
+  software: openstack
+  versions: ["2025.1", "2025.2"]
+skills:
+  - name: config-build
+    description: "Build globals.yml, inventory, and service configs from operator requirements"
+  - name: deploy
+    description: "Full kolla-ansible deploy lifecycle"
+  - name: health-check
+    description: "Validate environment health"
+  - name: diagnose
+    description: "Systematic troubleshooting"
+  - name: day-two
+    description: "Day-two operations"
+  - name: decision-guides
+    description: "Choose between networking and storage options"
+  - name: compatibility
+    description: "Version compatibility matrix"
+  - name: known-issues
+    description: "Known bugs and workarounds"
+depends_on: []
+requires:
+  tools:
+    - kolla-ansible
+    - openstack
+    - docker
+  python: ">=3.11"

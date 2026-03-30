@@ -1,0 +1,53 @@
+name: dell-hardware
+owner: agentic-stacks
+version: "0.2.0"
+repository: https://github.com/agentic-stacks/dell-hardware
+tag: v0.2.0
+sha256: ""
+description: >
+  Teaches AI agents to manage Dell PowerEdge server hardware — BIOS, iDRAC,
+  RAID, firmware updates, and hardware inventory.
+target:
+  software: Dell PowerEdge / iDRAC
+  versions: ["iDRAC9 (14G/15G/16G)", "iDRAC10 (17G)"]
+skills:
+  - name: concepts
+    description: "PowerEdge architecture, iDRAC fundamentals"
+  - name: tools
+    description: "Tool landscape — racadm, perccli, mvcli, Ansible OpenManage"
+  - name: architecture
+    description: "Container-based tooling approach"
+  - name: container-setup
+    description: "Build and run Dell tools container"
+  - name: initial-config
+    description: "First-time iDRAC setup"
+  - name: bios
+    description: "BIOS configuration via SCP"
+  - name: idrac
+    description: "iDRAC management and config-as-code"
+  - name: raid
+    description: "RAID management with perccli and mvcli"
+  - name: firmware
+    description: "Firmware updates and rollback"
+  - name: inventory
+    description: "Hardware inventory and asset export"
+  - name: openmanage
+    description: "Ansible dellemc.openmanage fleet operations"
+  - name: diagnose-hardware
+    description: "Hardware failure diagnosis"
+  - name: diagnose-connectivity
+    description: "Network/iDRAC connectivity troubleshooting"
+  - name: diagnose-storage
+    description: "Storage troubleshooting"
+  - name: known-issues
+    description: "Version-specific bugs and workarounds"
+  - name: compatibility
+    description: "Compatibility matrices"
+  - name: decision-guides
+    description: "Decision aids for tools and strategies"
+depends_on: []
+requires:
+  tools:
+    - docker
+    - docker-compose
+    - git
