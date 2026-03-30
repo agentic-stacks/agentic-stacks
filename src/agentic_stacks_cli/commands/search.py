@@ -1,9 +1,11 @@
 """agentic-stacks search — find stacks in the registry."""
 
 import pathlib
+
 import click
+
 from agentic_stacks_cli.config import load_config
-from agentic_stacks_cli.api_client import RegistryClient
+from agentic_stacks_cli.registry_repo import ensure_registry, search_formulas
 
 
 @click.command()
@@ -13,21 +15,25 @@ def search(query: str, config_path: str | None):
     """Search for stacks in the registry."""
     cfg_path = pathlib.Path(config_path) if config_path else None
     cfg = load_config(cfg_path)
-    api_url = cfg.get("api_url", "https://agentic-stacks.com/api/v1")
-    client = RegistryClient(api_url=api_url, token=cfg.get("token"))
+    repo_url = cfg.get("registry_repo", "https://github.com/agentic-stacks/registry")
+
     try:
-        results = client.search(query)
+        registry_path = ensure_registry(repo_url=repo_url)
     except Exception as e:
-        raise click.ClickException(f"Search failed: {e}")
+        raise click.ClickException(f"Could not update registry: {e}")
+
+    results = search_formulas(registry_path, query)
+
     if not results:
         click.echo(f"No stacks found for '{query}'.")
         return
+
     click.echo(f"Found {len(results)} stack(s):\n")
-    for stack in results:
-        owner = stack.get("owner") or stack.get("namespace", "")
-        name = stack.get("name", "")
-        version = stack.get("version", "")
-        desc = stack.get("description", "")
+    for formula in results:
+        owner = formula.get("owner", "")
+        name = formula.get("name", "")
+        version = formula.get("version", "")
+        desc = formula.get("description", "").strip()
         click.echo(f"  {owner}/{name}@{version}")
         if desc:
             click.echo(f"    {desc}")

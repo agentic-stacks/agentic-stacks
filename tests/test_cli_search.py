@@ -1,37 +1,66 @@
-import yaml
-from unittest.mock import patch, MagicMock
+import pathlib
+from unittest.mock import patch
 from click.testing import CliRunner
+import yaml
+
 from agentic_stacks_cli import cli
 
+FIXTURES = pathlib.Path(__file__).parent / "fixtures" / "registry"
 
-@patch("agentic_stacks_cli.commands.search.RegistryClient")
-def test_search_shows_results(mock_client_cls, tmp_path):
-    mock_client = MagicMock()
-    mock_client.search.return_value = [
-        {"name": "openstack", "namespace": "agentic-stacks", "version": "1.3.0", "description": "OpenStack deployment"},
-        {"name": "kubernetes", "namespace": "agentic-stacks", "version": "2.1.0", "description": "Kubernetes on Talos"},
-    ]
-    mock_client_cls.return_value = mock_client
+
+@patch("agentic_stacks_cli.commands.search.ensure_registry")
+def test_search_by_name(mock_ensure, tmp_path):
+    mock_ensure.return_value = FIXTURES
     config_path = tmp_path / "config.yaml"
-    config_path.write_text(yaml.dump({"api_url": "https://example.com/api/v1"}))
+    config_path.write_text(yaml.dump({}))
     runner = CliRunner()
-    result = runner.invoke(cli, ["search", "stack", "--config", str(config_path)])
-    assert result.exit_code == 0
-    assert "openstack" in result.output
-    assert "kubernetes" in result.output
+    result = runner.invoke(cli, ["search", "openstack", "--config", str(config_path)])
+    assert result.exit_code == 0, result.output
+    assert "openstack-kolla" in result.output
 
 
-@patch("agentic_stacks_cli.commands.search.RegistryClient")
-def test_search_no_results(mock_client_cls, tmp_path):
-    mock_client = MagicMock()
-    mock_client.search.return_value = []
-    mock_client_cls.return_value = mock_client
+@patch("agentic_stacks_cli.commands.search.ensure_registry")
+def test_search_by_target(mock_ensure, tmp_path):
+    mock_ensure.return_value = FIXTURES
     config_path = tmp_path / "config.yaml"
-    config_path.write_text(yaml.dump({"api_url": "https://example.com/api/v1"}))
+    config_path.write_text(yaml.dump({}))
     runner = CliRunner()
-    result = runner.invoke(cli, ["search", "nonexistent", "--config", str(config_path)])
+    result = runner.invoke(cli, ["search", "talos-linux", "--config", str(config_path)])
+    assert result.exit_code == 0, result.output
+    assert "kubernetes-talos" in result.output
+
+
+@patch("agentic_stacks_cli.commands.search.ensure_registry")
+def test_search_by_skill(mock_ensure, tmp_path):
+    mock_ensure.return_value = FIXTURES
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(yaml.dump({}))
+    runner = CliRunner()
+    result = runner.invoke(cli, ["search", "RAID", "--config", str(config_path)])
+    assert result.exit_code == 0, result.output
+    assert "dell-hardware" in result.output
+
+
+@patch("agentic_stacks_cli.commands.search.ensure_registry")
+def test_search_no_results(mock_ensure, tmp_path):
+    mock_ensure.return_value = FIXTURES
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(yaml.dump({}))
+    runner = CliRunner()
+    result = runner.invoke(cli, ["search", "zzz-nonexistent", "--config", str(config_path)])
     assert result.exit_code == 0
-    assert "no stacks found" in result.output.lower() or "0" in result.output
+    assert "No stacks found" in result.output
+
+
+@patch("agentic_stacks_cli.commands.search.ensure_registry")
+def test_search_shows_description(mock_ensure, tmp_path):
+    mock_ensure.return_value = FIXTURES
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(yaml.dump({}))
+    runner = CliRunner()
+    result = runner.invoke(cli, ["search", "dell", "--config", str(config_path)])
+    assert result.exit_code == 0, result.output
+    assert "dell-hardware" in result.output
 
 
 def test_search_no_query():
