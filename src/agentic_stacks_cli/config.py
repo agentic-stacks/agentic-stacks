@@ -6,7 +6,7 @@ from typing import Any
 import yaml
 
 CONFIG_DEFAULTS = {
-    "registry": "ghcr.io",
+    "registry_repo": "https://github.com/agentic-stacks/registry",
     "default_namespace": "agentic-stacks",
     "api_url": "https://agentic-stacks.ajmesserli.workers.dev/api/v1",
     "token": None,

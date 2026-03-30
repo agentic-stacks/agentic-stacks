@@ -1,6 +1,7 @@
 """Local registry repo — read, search, and write formula YAML files."""
 
 import pathlib
+import subprocess
 from typing import Any
 
 import yaml
@@ -9,6 +10,41 @@ import yaml
 Formula = dict[str, Any]
 
 STACKS_DIR = "stacks"
+DEFAULT_REGISTRY_REPO = "https://github.com/agentic-stacks/registry"
+DEFAULT_CONFIG_DIR = pathlib.Path.home() / ".config" / "agentic-stacks"
+
+
+def registry_cache_path(config_dir: pathlib.Path | None = None) -> pathlib.Path:
+    """Return the path to the local registry cache."""
+    base = config_dir if config_dir else DEFAULT_CONFIG_DIR
+    return base / "registry"
+
+
+def ensure_registry(
+    repo_url: str = DEFAULT_REGISTRY_REPO,
+    cache_dir: pathlib.Path | None = None,
+) -> pathlib.Path:
+    """Clone or update the local registry cache. Returns the cache path."""
+    if cache_dir is None:
+        cache_dir = registry_cache_path()
+
+    if (cache_dir / ".git").is_dir():
+        subprocess.run(
+            ["git", "-C", str(cache_dir), "fetch", "--quiet"],
+            capture_output=True, text=True,
+        )
+        subprocess.run(
+            ["git", "-C", str(cache_dir), "reset", "--hard", "origin/main", "--quiet"],
+            capture_output=True, text=True,
+        )
+    else:
+        cache_dir.parent.mkdir(parents=True, exist_ok=True)
+        subprocess.run(
+            ["git", "clone", "--quiet", repo_url, str(cache_dir)],
+            capture_output=True, text=True,
+        )
+
+    return cache_dir
 
 
 def load_formula(registry_path: pathlib.Path, owner: str, name: str) -> Formula:
