@@ -55,8 +55,6 @@ Hit an issue? Ask your agent to document it. Stacks get smarter over time — ev
 | [ceph](https://www.agentic-stacks.com/stacks/agentic-stacks/ceph) | ceph | 17 |
 | [minio](https://www.agentic-stacks.com/stacks/agentic-stacks/minio) | minio | 0 |
 | [hardware-dell](https://www.agentic-stacks.com/stacks/agentic-stacks/hardware-dell) | Dell PowerEdge | 18 |
-| [hardware-hpe](https://www.agentic-stacks.com/stacks/agentic-stacks/hardware-hpe) | hpe-ilo | 16 |
-| [hardware-supermicro](https://www.agentic-stacks.com/stacks/agentic-stacks/hardware-supermicro) | Supermicro BMC | 17 |
 | [hpe-hardware](https://www.agentic-stacks.com/stacks/agentic-stacks/hpe-hardware) | hpe-ilo | 16 |
 | [supermicro-hardware](https://www.agentic-stacks.com/stacks/agentic-stacks/supermicro-hardware) | Supermicro BMC | 17 |
 | [frr](https://www.agentic-stacks.com/stacks/agentic-stacks/frr) | frr | 35 |
