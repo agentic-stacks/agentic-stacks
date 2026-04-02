@@ -119,22 +119,22 @@ def _api_get(url: str, token: str | None = None) -> dict | list | None:
 
 
 def fetch_repos(org: str, token: str | None = None) -> list[str]:
-    """List all public repos in a GitHub org (handles pagination).
-
-    Uses type=all to list all repos the token can access.
-    """
+    """List public repos in a GitHub org (handles pagination)."""
     repos = []
     page = 1
     while True:
         url = (f"https://api.github.com/orgs/{org}/repos"
-               f"?per_page=100&page={page}")
+               f"?type=public&per_page=100&page={page}")
         data = _api_get(url, token=token)
         if data is None:
             print(f"  API request failed for page {page}", file=sys.stderr)
             break
         if not data:
             break
-        repos.extend(r["name"] for r in data)
+        for r in data:
+            if r.get("private"):
+                continue
+            repos.append(r["name"])
         if len(data) < 100:
             break
         page += 1
