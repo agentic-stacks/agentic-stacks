@@ -26,15 +26,12 @@ dependencies = [
     "pyyaml>=6.0",
     "jsonschema>=4.20",
     "click>=8.1",
-]
-
-[project.optional-dependencies]
-web = [
     "fastapi>=0.115",
     "jinja2>=3.1",
 ]
+
+[project.optional-dependencies]
 dev = [
-    "agentic-stacks[web]",
     "pytest>=8.0",
     "pytest-tmp-files>=0.0.2",
     "pytest-asyncio>=0.24",
@@ -43,7 +40,6 @@ mcp = [
     "mcp[cli]>=1.0",
 ]
 local = [
-    "agentic-stacks[web]",
     "uvicorn[standard]>=0.32",
 ]
 
