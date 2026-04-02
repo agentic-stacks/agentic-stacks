@@ -1,0 +1,36 @@
+name: sample-stack
+owner: test
+version: "1.0.0"
+description: "A sample stack for testing"
+
+target:
+  software: sample
+  versions: ["1.0", "2.0"]
+
+skills:
+  - name: deploy
+    entry: skills/deploy/
+    description: "Deploy the thing"
+  - name: health-check
+    entry: skills/health-check/
+    description: "Check if the thing is healthy"
+
+profiles:
+  categories: [security, networking, storage]
+  path: profiles/
+  merge_order: "security first (enforced), then declared order"
+
+environment_schema: environments/_schema.json
+
+depends_on: []
+
+requires:
+  tools: [sample-tool]
+  python: ">=3.11"
+
+deprecations:
+  - skill: old-deploy
+    since: "0.9.0"
+    removal: "2.0.0"
+    replacement: deploy
+    reason: "Replaced with improved deploy skill"

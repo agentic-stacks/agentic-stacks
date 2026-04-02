@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Getting Started — Agentic Stacks{% endblock %}
+{% block meta_description %}Install the Agentic Stacks CLI tool and give your AI coding assistant deep infrastructure expertise. Quick start guide for DevOps engineers, sysadmins, and developers using Claude Code, Codex, or Gemini.{% endblock %}
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <h1 class="text-3xl sm:text-4xl font-bold mb-6">Getting Started</h1>
+
+    <div class="prose prose-invert max-w-none space-y-6 text-gray-300">
+
+        <h2 class="text-2xl font-semibold text-white mt-10">Install</h2>
+        <p>Agentic Stacks is distributed as a Python package on PyPI. The CLI tool handles all stack management from the command line — no GUI required.</p>
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-4 my-4">
+            <pre class="text-sm"><code>pipx install agentic-stacks</code></pre>
+        </div>
+
+        <h2 class="text-2xl font-semibold text-white mt-10">Create a Project</h2>
+        <p>A project is a directory where you compose one or more stacks. The agent reads all stacks and combines their expertise.</p>
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-4 my-4">
+            <pre class="text-sm"><code># Create a project
+agentic-stacks init my-deployment
+cd my-deployment
+
+# Pull in the stacks you need
+agentic-stacks pull kubernetes-talos
+agentic-stacks pull hardware-dell</code></pre>
+        </div>
+        <p>This creates:</p>
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-4 my-4">
+            <pre class="text-sm text-gray-400"><code>my-deployment/
+├── .stacks/              # Pulled stack repos (gitignored)
+│   ├── kubernetes-talos/ # Platform expertise
+│   └── hardware-dell/    # Hardware expertise
+├── CLAUDE.md             # Points agent to .stacks/*/CLAUDE.md
+├── stacks.lock           # Pinned stack references
+└── .gitignore</code></pre>
+        </div>
+
+        <h2 class="text-2xl font-semibold text-white mt-10">Add More Stacks</h2>
+        <p>Compose multiple stacks for cross-domain expertise:</p>
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-4 my-4">
+            <pre class="text-sm"><code># Add another stack anytime
+agentic-stacks pull kubernetes-talos
+
+# See what's in the project
+agentic-stacks list</code></pre>
+        </div>
+
+        <h2 class="text-2xl font-semibold text-white mt-10">Search for Stacks</h2>
+        <p>Find stacks by name, target software, or skill:</p>
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-4 my-4">
+            <pre class="text-sm"><code>agentic-stacks search "kubernetes"
+agentic-stacks search "RAID"
+agentic-stacks search "ceph"</code></pre>
+        </div>
+        <p>Or <a href="/stacks" class="text-emerald-400 hover:underline">browse all stacks</a> on this site.</p>
+
+        <h2 class="text-2xl font-semibold text-white mt-10">Use with an AI Agent</h2>
+        <p>Open your project directory in any coding agent that reads project-level markdown files — <a href="https://claude.ai/code" class="text-emerald-400 hover:underline">Claude Code</a>, OpenAI Codex CLI, Gemini CLI, or an editor like Cursor. This AI pair programming workflow means the agent handles the domain-specific details while you make the high-level decisions.</p>
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-4 my-4">
+            <pre class="text-sm"><code># From your project directory
+claude
+
+# Try this as your first prompt:
+> check repo for my skills</code></pre>
+        </div>
+        <p>The agent scans your pulled stacks and lists every skill available — deploy workflows, troubleshooting guides, configuration references, and more. From there, just describe what you need.</p>
+
+        <h2 class="text-2xl font-semibold text-white mt-10">CLI Reference</h2>
+        <div class="overflow-x-auto">
+        <table class="w-full text-sm my-4">
+            <thead>
+                <tr class="border-b border-gray-800 text-left text-gray-500">
+                    <th class="pb-2 font-medium">Command</th>
+                    <th class="pb-2 font-medium">Description</th>
+                </tr>
+            </thead>
+            <tbody class="text-gray-400">
+                <tr class="border-b border-gray-800/50"><td class="py-2 pr-4 whitespace-nowrap"><code>init [path]</code></td><td>Create a new project</td></tr>
+                <tr class="border-b border-gray-800/50"><td class="py-2 pr-4 whitespace-nowrap"><code>pull [ref]</code></td><td>Pull a stack (or all stacks from lock file)</td></tr>
+                <tr class="border-b border-gray-800/50"><td class="py-2 pr-4 whitespace-nowrap"><code>search &lt;query&gt;</code></td><td>Search the registry</td></tr>
+                <tr class="border-b border-gray-800/50"><td class="py-2 pr-4 whitespace-nowrap"><code>list</code></td><td>Show stacks in the current project</td></tr>
+                <tr class="border-b border-gray-800/50"><td class="py-2 pr-4 whitespace-nowrap"><code>update [name]</code></td><td>Update stacks to latest versions</td></tr>
+                <tr class="border-b border-gray-800/50"><td class="py-2 pr-4 whitespace-nowrap"><code>update --check</code></td><td>Check for updates without applying</td></tr>
+                <tr class="border-b border-gray-800/50"><td class="py-2 pr-4 whitespace-nowrap"><code>remove &lt;ref&gt;</code></td><td>Remove a stack from the project</td></tr>
+                <tr class="border-b border-gray-800/50"><td class="py-2 pr-4 whitespace-nowrap"><code>create &lt;owner/name&gt;</code></td><td>Scaffold a new stack (for authors)</td></tr>
+                <tr class="border-b border-gray-800/50"><td class="py-2 pr-4 whitespace-nowrap"><code>doctor</code></td><td>Validate stack or project</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h2 class="text-2xl font-semibold text-white mt-10">Next Steps</h2>
+        <ul class="list-disc list-inside space-y-2">
+            <li><a href="/stacks" class="text-emerald-400 hover:underline">Browse available stacks</a></li>
+            <li><a href="/docs/authoring" class="text-emerald-400 hover:underline">Author your own stack</a></li>
+            <li><a href="/docs/faq" class="text-emerald-400 hover:underline">FAQ — using with Claude, Codex, Gemini, Cursor</a></li>
+            <li><a href="/about" class="text-emerald-400 hover:underline">Learn more about Agentic Stacks</a></li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

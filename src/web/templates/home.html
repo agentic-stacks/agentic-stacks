@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Agentic Stacks — Domain Expertise for AI Coding Agents{% endblock %}
+{% block meta_description %}Give your AI coding assistant deep infrastructure expertise. Pull skill packs for OpenStack deployment, Kubernetes clusters, Ceph storage, Docker containers, and server management into Claude Code, Codex, Gemini, or Cursor.{% endblock %}
+{% block og_title %}Agentic Stacks — Domain Expertise for AI Agents{% endblock %}
+{% block og_description %}Pull installable skill packs into your project to give AI agents deep operational expertise.{% endblock %}
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Agentic Stacks",
+  "url": "https://agentic-stacks.com",
+  "description": "Installable skill packs that give AI agents deep domain expertise.",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Agentic Stacks",
+    "url": "https://agentic-stacks.com",
+    "sameAs": ["https://github.com/agentic-stacks"]
+  },
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://agentic-stacks.com/stacks?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+{% endblock %}
+{% block content %}
+<div class="text-center py-8 sm:py-16">
+    <h1 class="text-3xl sm:text-5xl font-bold mb-4">Agentic Stacks</h1>
+    <p class="text-lg sm:text-xl text-gray-300 mb-3 max-w-2xl mx-auto">
+        Installable skill packs that give your AI coding assistant deep infrastructure expertise.
+    </p>
+    <p class="text-base text-gray-500 mb-10 max-w-2xl mx-auto">
+        Works with Claude Code, Codex CLI, Gemini, Cursor, and any agent that reads markdown.
+    </p>
+
+    <div class="max-w-3xl mx-auto mb-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-left">
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-4">
+            <p class="text-emerald-400 font-semibold mb-1">Pull</p>
+            <p class="text-sm text-gray-400">Install domain expertise with one command.</p>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-4">
+            <p class="text-emerald-400 font-semibold mb-1">Compose</p>
+            <p class="text-sm text-gray-400">Combine hardware + platform + storage stacks in one project.</p>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-4">
+            <p class="text-emerald-400 font-semibold mb-1">Operate</p>
+            <p class="text-sm text-gray-400">Deploy, troubleshoot, upgrade, and run day-two operations.</p>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-4">
+            <p class="text-emerald-400 font-semibold mb-1">Improve</p>
+            <p class="text-sm text-gray-400">Hit an issue? Capture the fix. It feeds back for everyone.</p>
+        </div>
+    </div>
+
+    <div class="max-w-xl mx-auto mb-12">
+        <input type="text" name="q" placeholder="Search stacks..."
+               class="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-emerald-400"
+               hx-get="/web/search" hx-trigger="keyup changed delay:300ms" hx-target="#search-results">
+        <div id="search-results" class="mt-4 text-left"></div>
+    </div>
+    <div class="max-w-2xl mx-auto text-left">
+        <p class="text-sm text-gray-500 mb-2">Get started:</p>
+        <pre class="bg-gray-900 border border-gray-800 rounded-lg p-3 sm:p-4 text-xs sm:text-sm overflow-x-auto"><code>pipx install agentic-stacks
+agentic-stacks init my-cluster
+cd my-cluster
+agentic-stacks pull kubernetes-talos
+claude
+> check repo for my skills</code></pre>
+    </div>
+</div>
+{% if featured_stacks %}
+<div class="mt-8">
+    <h2 class="text-2xl font-semibold mb-4">Featured Stacks</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% for stack in featured_stacks %}
+        {% include "_stack_card.html" %}
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

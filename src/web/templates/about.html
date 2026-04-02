@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}About — Agentic Stacks{% endblock %}
+{% block meta_description %}Agentic Stacks is an open source platform that gives AI coding assistants deep infrastructure expertise. Learn how stacks teach Claude Code, Codex, and other agents to handle DevOps, SRE, and infrastructure operations.{% endblock %}
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <h1 class="text-3xl sm:text-4xl font-bold mb-6">About Agentic Stacks</h1>
+
+    <div class="prose prose-invert max-w-none space-y-6 text-gray-300">
+        <p class="text-xl text-gray-400">
+            Agentic Stacks packages domain expertise into installable skill packs that teach AI agents how to deploy, manage, and troubleshoot complex infrastructure.
+        </p>
+
+        <h2 class="text-2xl font-semibold text-white mt-10">The Problem</h2>
+        <p>
+            Agentic AI is transforming how teams manage infrastructure, but general-purpose AI coding assistants lack the deep, specific knowledge that infrastructure operations demand — the kind that takes DevOps and SRE teams years to build. An agent needs to know not just <em>what</em> commands to run, but <em>when</em> to run them, <em>what order</em> matters, <em>what can go wrong</em>, and <em>how to recover</em>.
+        </p>
+        <p>
+            This knowledge exists in documentation, runbooks, playbooks, and the heads of senior engineers. It's scattered, version-specific, and hard to keep current. Self-hosted and on-premise infrastructure like OpenStack and Kubernetes is especially demanding — there are no managed services to fall back on. Agentic Stacks makes this operational expertise portable and composable.
+        </p>
+
+        <h2 class="text-2xl font-semibold text-white mt-10">What Is a Stack?</h2>
+        <p>
+            A stack is a git repository containing <strong>skills</strong> — structured markdown files that teach an agent how to operate in a specific domain. Each skill covers a distinct operational concern: cloud deployment, configuration management, troubleshooting storage, incident response procedures, or choosing between networking options.
+        </p>
+        <p>
+            Unlike infrastructure as code tools that define desired state, stacks teach agents the operational knowledge needed to get there — the deployment order, the safety checks, the troubleshooting steps. They complement your existing IaC and configuration management tooling by giving the agent the context it needs to generate correct configurations and run deployments safely.
+        </p>
+        <p>
+            Stacks also include a <strong>manifest</strong> (<code>stack.yaml</code>) for machine-readable metadata and a <strong>CLAUDE.md</strong> that sets the agent's identity, safety rules, and routing table.
+        </p>
+
+        <h2 class="text-2xl font-semibold text-white mt-10">How It Works</h2>
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-6 my-4">
+            <pre class="text-sm text-gray-300 overflow-x-auto"><code># Create a project and pull stacks
+agentic-stacks init my-cluster
+cd my-cluster
+agentic-stacks pull kubernetes-talos
+
+# Add more stacks for cross-domain expertise
+agentic-stacks pull hardware-dell
+
+# Open in Claude Code, Codex CLI, Gemini, or any coding agent
+# The agent reads .stacks/*/CLAUDE.md and combines expertise
+# Output is native format — globals.yml, inventory, configs</code></pre>
+        </div>
+        <p>
+            When a coding agent enters the project directory, it reads each stack's CLAUDE.md and gains the combined expertise. This AI pair programming workflow means the agent handles the domain-specific details — BIOS configuration, RAID setup, firmware updates, network boot sequences — while you make the high-level decisions. A project with an OpenStack stack and a hardware stack produces an agent that can configure Dell servers <em>and</em> deploy OpenStack on them.
+        </p>
+
+        <h2 class="text-2xl font-semibold text-white mt-10">Who Is This For?</h2>
+        <p>
+            Agentic Stacks is AI for developers, sysadmins, and ops teams operating real infrastructure. Whether you're running a homelab, a private cloud, a data center, or a hybrid cloud environment:
+        </p>
+        <ul class="list-disc list-inside space-y-2">
+            <li><strong>DevOps engineers</strong> deploying and managing Kubernetes, OpenStack, or Docker containers</li>
+            <li><strong>SRE teams</strong> codifying incident response procedures and production operations knowledge</li>
+            <li><strong>Sysadmins</strong> managing bare metal servers — Dell, HPE, Supermicro — across generations</li>
+            <li><strong>Homelab enthusiasts</strong> deploying their first Kubernetes cluster or Ceph storage pool</li>
+            <li><strong>Platform teams</strong> building deployment automation and operational tooling</li>
+        </ul>
+
+        <h2 class="text-2xl font-semibold text-white mt-10">Works with Any Agent</h2>
+        <p>
+            Stacks are plain markdown — they work with any LLM tools and AI coding assistants. Claude Code reads CLAUDE.md automatically. OpenAI Codex CLI reads AGENTS.md. Gemini CLI reads GEMINI.md. Editors like Cursor, Windsurf, VS Code with GitHub Copilot, and JetBrains with AI plugins can all reference stack skills. Models from Anthropic, OpenAI, Google, and open source AI projects all work because the knowledge is structured text, not model-specific.
+        </p>
+
+        <h2 class="text-2xl font-semibold text-white mt-10">Composition</h2>
+        <p>
+            Stacks are designed to compose. A hardware stack handles bare metal provisioning — BIOS configuration, RAID setup, firmware updates, and network boot. A platform stack handles Kubernetes deployment or OpenStack deployment. A storage stack handles Ceph storage or NFS. Pull what you need for your on-premise or hybrid cloud deployment — the agent merges the expertise.
+        </p>
+
+        <h2 class="text-2xl font-semibold text-white mt-10">The Feedback Loop</h2>
+        <p>
+            Stacks get smarter over time. As you work with an agent, ask it to capture notes when things go wrong — a command that fails, a config that needs a workaround, a version-specific gotcha. Site reliability teams can feed incident response learnings back into the stack as known issues, updated procedures, and better decision guides.
+        </p>
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-4 my-4">
+            <p class="text-sm text-gray-500 mb-2">Tip: ask your agent to take notes as you go</p>
+            <pre class="text-xs sm:text-sm overflow-x-auto"><code><span class="text-gray-400">"Hey, that NTP fix we just did — add it to known issues</span>
+<span class="text-gray-400"> for this version so the next person doesn't hit it."</span></code></pre>
+        </div>
+        <p>
+            Every operator encounter is a chance to improve the stack. File an issue, open a PR, or just tell your agent to document what happened. The next person who pulls the stack gets the benefit of your production operations experience.
+        </p>
+
+        <h2 class="text-2xl font-semibold text-white mt-10">Get Involved</h2>
+        <p>
+            Agentic Stacks is open source (MIT license). Whether you're exploring AI DevOps workflows or building internal tooling, <a href="/docs/authoring" class="text-emerald-400 hover:underline">authoring a stack</a> is a way to share what your team has learned. Stacks work with open source AI models too — any agent that reads markdown can leverage the skills, regardless of the underlying model. <a href="/stacks" class="text-emerald-400 hover:underline">Browse existing stacks</a> to see what's available, or check the <a href="/docs/faq" class="text-emerald-400 hover:underline">FAQ</a> to get started.
+        </p>
+    </div>
+</div>
+{% endblock %}

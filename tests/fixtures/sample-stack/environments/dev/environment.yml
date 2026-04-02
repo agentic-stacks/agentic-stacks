@@ -1,0 +1,10 @@
+name: dev
+description: Development environment
+
+profiles:
+  security: baseline
+  networking: option-a
+  storage: default
+
+approval:
+  tier: auto

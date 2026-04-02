@@ -1,0 +1,9 @@
+{% if stacks %}
+<div class="space-y-2">
+    {% for stack in stacks %}
+    {% include "_stack_card.html" %}
+    {% endfor %}
+</div>
+{% elif query %}
+<p class="text-gray-500">No stacks found for "{{ query }}".</p>
+{% endif %}

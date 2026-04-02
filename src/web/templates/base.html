@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Agentic Stacks{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Composed domain expertise for AI agents and humans. Browse, search, and install stacks for OpenStack, Kubernetes, Ceph, Docker, and hardware management.{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}Agentic Stacks{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Composed domain expertise for AI agents and humans.{% endblock %}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:image" content="{% block og_image %}/static/og-image.svg{% endblock %}">
+    <meta property="og:site_name" content="Agentic Stacks">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}Agentic Stacks{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Installable skill packs that give AI agents deep domain expertise.{% endblock %}">
+    <link rel="canonical" href="{{ request.url }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+    <link rel="stylesheet" href="/static/style.css">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z8FFVZXRVK"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z8FFVZXRVK');
+    </script>
+    {% block head_extra %}{% endblock %}
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col overflow-x-hidden">
+    <nav class="border-b border-gray-800 px-4 sm:px-6 py-4">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <a href="/" class="text-lg sm:text-xl font-bold text-white shrink-0">Agentic Stacks</a>
+            <div class="flex items-center gap-3 sm:gap-6 text-sm sm:text-base">
+                <a href="/stacks" class="text-gray-400 hover:text-white transition">Browse</a>
+                <a href="/docs/getting-started" class="text-gray-400 hover:text-white transition">Docs</a>
+                <a href="/docs/faq" class="text-gray-400 hover:text-white transition">FAQ</a>
+                <a href="/about" class="text-gray-400 hover:text-white transition">About</a>
+                <a href="https://github.com/agentic-stacks" class="text-gray-400 hover:text-white transition">GitHub</a>
+            </div>
+        </div>
+    </nav>
+    <main class="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8 min-w-0">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="border-t border-gray-800 px-4 sm:px-6 py-6 text-center text-gray-500 text-sm">
+        Agentic Stacks — composed domain expertise for AI agents and humans.
+    </footer>
+</body>
+</html>

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Browse Stacks — Agentic Stacks{% endblock %}
+{% block meta_description %}Browse all available agentic stacks — domain expertise packages for AI agents covering infrastructure, hardware, and platform operations.{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl sm:text-3xl font-bold">Browse Stacks</h1>
+    <span class="text-sm text-gray-500">{{ total }} stack{{ 's' if total != 1 }}</span>
+</div>
+<div class="mb-6 flex flex-col sm:flex-row gap-4">
+    <input type="text" name="q" value="{{ query }}" placeholder="Search stacks..."
+           class="w-full sm:max-w-md px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-emerald-400"
+           hx-get="/stacks" hx-trigger="keyup changed delay:300ms" hx-target="#stacks-list"
+           hx-push-url="true" hx-include="this">
+    {% if categories|length > 1 %}
+    <div class="flex flex-wrap gap-2">
+        <button class="category-btn text-xs px-3 py-1.5 rounded-full bg-emerald-900/50 text-emerald-300 border border-emerald-800" onclick="filterCategory('')">All</button>
+        {% for cat in categories %}
+        <button class="category-btn text-xs px-3 py-1.5 rounded-full bg-gray-800 text-gray-400 border border-gray-700 hover:border-gray-500 transition" onclick="filterCategory('{{ cat }}')">{{ cat }}</button>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+<div id="stacks-list">
+    {% if stacks %}
+    <div class="overflow-x-auto">
+    <table class="w-full">
+        <thead>
+            <tr class="border-b border-gray-800 text-left text-xs uppercase tracking-wider text-gray-500">
+                <th class="pb-3 font-medium">Stack</th>
+                <th class="pb-3 font-medium hidden sm:table-cell w-24">Category</th>
+                <th class="pb-3 font-medium text-center hidden md:table-cell w-16">Skills</th>
+                <th class="pb-3 font-medium text-right w-16">Version</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stack in stacks %}
+            <tr class="stack-row border-b border-gray-800/50 hover:bg-gray-900/50 transition" data-category="{{ stack.category }}">
+                <td class="py-3 pr-4">
+                    <a href="/stacks/{{ stack.namespace }}/{{ stack.name }}" class="group">
+                        <span class="font-medium text-white group-hover:text-emerald-400 transition">{{ stack.name }}</span>
+                        <p class="text-sm text-gray-500 mt-0.5 line-clamp-1">{{ stack.description }}</p>
+                    </a>
+                </td>
+                <td class="py-3 pr-4 hidden sm:table-cell align-top">
+                    <span class="text-xs bg-gray-800 text-gray-400 px-2 py-0.5 rounded whitespace-nowrap">{{ stack.category }}</span>
+                </td>
+                <td class="py-3 text-center text-sm text-gray-500 hidden md:table-cell align-top">
+                    {{ stack.skill_count }}
+                </td>
+                <td class="py-3 text-right text-sm text-gray-500 align-top">
+                    {{ stack.version }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    {% else %}
+    <p class="text-gray-500">No stacks found{% if query %} for "{{ query }}"{% endif %}.</p>
+    {% endif %}
+</div>
+<script>
+function filterCategory(cat) {
+    document.querySelectorAll('.stack-row').forEach(row => {
+        row.style.display = (!cat || row.dataset.category === cat) ? '' : 'none';
+    });
+    document.querySelectorAll('.category-btn').forEach(btn => {
+        const isActive = (!cat && btn.textContent.trim() === 'All') || btn.textContent.trim() === cat;
+        btn.className = isActive
+            ? 'category-btn text-xs px-3 py-1.5 rounded-full bg-emerald-900/50 text-emerald-300 border border-emerald-800'
+            : 'category-btn text-xs px-3 py-1.5 rounded-full bg-gray-800 text-gray-400 border border-gray-700 hover:border-gray-500 transition';
+    });
+}
+</script>
+{% endblock %}
