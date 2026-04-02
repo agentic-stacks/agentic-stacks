@@ -1,0 +1,5 @@
+networking:
+  driver: option-b
+  mtu: 9000
+  dns_servers:
+    - 1.1.1.1

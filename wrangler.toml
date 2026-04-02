@@ -1,0 +1,10 @@
+name = "agentic-stacks"
+main = "src/main.py"
+compatibility_date = "2026-03-27"
+compatibility_flags = ["python_workers"]
+
+[vars]
+ENVIRONMENT = "production"
+
+[observability]
+enabled = true

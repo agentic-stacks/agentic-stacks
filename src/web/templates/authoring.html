@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+{% block title %}Authoring a Stack — Agentic Stacks{% endblock %}
+{% block meta_description %}Learn how to create an Agentic Stack — a git repository that teaches AI agents to operate in a specific domain. Covers skill design, manifest format, CLAUDE.md writing, and publishing.{% endblock %}
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <h1 class="text-3xl sm:text-4xl font-bold mb-6">Authoring a Stack</h1>
+
+    <div class="prose prose-invert max-w-none space-y-6 text-gray-300">
+        <p class="text-xl text-gray-400">
+            A stack is a git repository that teaches an AI agent how to operate in a specific domain. When an agent reads your stack, it should become an expert operator — capable of deploying, managing, troubleshooting, and upgrading the target software.
+        </p>
+
+        <nav class="bg-gray-900 border border-gray-800 rounded-lg p-4 my-6">
+            <p class="text-sm text-gray-500 mb-2">On this page:</p>
+            <ol class="text-sm space-y-1 list-decimal list-inside text-emerald-400">
+                <li><a href="#anatomy" class="hover:underline">Anatomy of a Stack</a></li>
+                <li><a href="#skills" class="hover:underline">Design the Skill Hierarchy</a></li>
+                <li><a href="#claude-md" class="hover:underline">Write CLAUDE.md</a></li>
+                <li><a href="#manifest" class="hover:underline">Write stack.yaml</a></li>
+                <li><a href="#research" class="hover:underline">Research and Verify</a></li>
+                <li><a href="#content" class="hover:underline">Write Skill Content</a></li>
+                <li><a href="#decisions" class="hover:underline">Decision Guides and Compatibility</a></li>
+                <li><a href="#validate" class="hover:underline">Validate Your Stack</a></li>
+                <li><a href="#composition" class="hover:underline">Designing for Composition</a></li>
+            </ol>
+        </nav>
+
+        <h2 id="anatomy" class="text-2xl font-semibold text-white mt-10">Anatomy of a Stack</h2>
+        <p>Every stack has these files at the root:</p>
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-4 my-4">
+            <pre class="text-sm text-gray-400"><code>my-stack/
+├── README.md       # Repo landing page
+├── CLAUDE.md       # Agent entry point — persona, rules, routing
+├── stack.yaml      # Machine-readable manifest
+└── skills/         # Operational knowledge, organized by phase</code></pre>
+        </div>
+        <p>Scaffold one with:</p>
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-4 my-4">
+            <pre class="text-sm"><code>agentic-stacks create my-org/my-stack</code></pre>
+        </div>
+
+        <h2 id="skills" class="text-2xl font-semibold text-white mt-10">Step 1: Design the Skill Hierarchy</h2>
+        <p>Skills are directories of markdown files that teach the agent specific operations. Organize by <em>what the operator is trying to do</em>:</p>
+        <div class="overflow-x-auto">
+        <table class="w-full text-sm my-4">
+            <thead>
+                <tr class="border-b border-gray-800 text-left text-gray-500">
+                    <th class="pb-2 font-medium">Phase</th>
+                    <th class="pb-2 font-medium">Purpose</th>
+                    <th class="pb-2 font-medium">Examples</th>
+                </tr>
+            </thead>
+            <tbody class="text-gray-400">
+                <tr class="border-b border-gray-800/50"><td class="py-2 pr-4 font-medium text-white whitespace-nowrap">Foundation</td><td class="pr-4">Understanding and setup</td><td>Architecture, configuration, provisioning</td></tr>
+                <tr class="border-b border-gray-800/50"><td class="py-2 pr-4 font-medium text-white whitespace-nowrap">Deploy</td><td class="pr-4">Initial deployment</td><td>Bootstrap, networking, storage</td></tr>
+                <tr class="border-b border-gray-800/50"><td class="py-2 pr-4 font-medium text-white whitespace-nowrap">Platform</td><td class="pr-4">Platform layer</td><td>GitOps, ingress, monitoring, security</td></tr>
+                <tr class="border-b border-gray-800/50"><td class="py-2 pr-4 font-medium text-white whitespace-nowrap">Operations</td><td class="pr-4">Day-two management</td><td>Health checks, scaling, upgrades, backup</td></tr>
+                <tr class="border-b border-gray-800/50"><td class="py-2 pr-4 font-medium text-white whitespace-nowrap">Diagnose</td><td class="pr-4">Troubleshooting</td><td>Symptom-based decision trees</td></tr>
+                <tr class="border-b border-gray-800/50"><td class="py-2 pr-4 font-medium text-white whitespace-nowrap">Reference</td><td class="pr-4">Cross-cutting lookups</td><td>Known issues, compatibility, decision guides</td></tr>
+            </tbody>
+        </table>
+        </div>
+        <p>For complex stacks (10+ skills), use <strong>phase/domain</strong> nesting:</p>
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-4 my-4">
+            <pre class="text-sm text-gray-400"><code>skills/
+├── foundation/
+│   ├── concepts/
+│   └── infrastructure/
+│       ├── README.md       # Overview + index
+│       ├── aws.md          # Platform-specific
+│       └── gcp.md
+├── deploy/
+│   ├── bootstrap/
+│   ├── networking/
+│   │   ├── README.md       # Decision matrix
+│   │   ├── cilium.md       # Option deep dive
+│   │   └── flannel.md
+│   └── storage/
+└── operations/
+    ├── health-check/
+    ├── upgrades/
+    └── backup-restore/</code></pre>
+        </div>
+
+        <h2 id="claude-md" class="text-2xl font-semibold text-white mt-10">Step 2: Write CLAUDE.md</h2>
+        <p>CLAUDE.md is the agent's brain. It sets identity, enforces safety, and routes to skills.</p>
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-4 my-4">
+            <pre class="text-sm text-gray-400"><code># [Stack Name] — Agentic Stack
+
+## Identity
+[1-2 sentences establishing the agent's expertise]
+
+## Critical Rules
+[Numbered list of hard safety guardrails]
+
+## Routing Table
+| Operator Need | Skill | Entry Point |
+|---|---|---|
+| Deploy the cluster | bootstrap | skills/deploy/bootstrap |
+| Troubleshoot issues | troubleshooting | skills/diagnose/troubleshooting |
+
+## Workflows
+### New Deployment
+[Linear path through skills for first-time setup]
+
+### Existing Deployment
+[How to jump to the right skill for ongoing operations]</code></pre>
+        </div>
+        <h3 class="text-lg font-semibold text-white mt-6">Writing Critical Rules</h3>
+        <p>Critical rules prevent the agent from doing damage. Good rules are:</p>
+        <ul class="list-disc list-inside space-y-1">
+            <li><strong>Specific</strong>: "Never run <code>talosctl reset</code> without operator approval" not "be careful"</li>
+            <li><strong>Actionable</strong>: the agent can check compliance unambiguously</li>
+            <li><strong>Justified</strong>: explain <em>why</em> — "etcd quorum loss means cluster down"</li>
+            <li><strong>Minimal</strong>: 5-10 rules. Too many and the agent ignores them.</li>
+        </ul>
+
+        <h2 id="manifest" class="text-2xl font-semibold text-white mt-10">Step 3: Write stack.yaml</h2>
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-4 my-4">
+            <pre class="text-sm text-gray-400"><code>name: my-stack
+owner: my-org
+version: 0.1.0
+description: >
+  One paragraph describing what this stack teaches agents to operate.
+
+repository: https://github.com/my-org/my-stack
+
+target:
+  software: target-software-name
+  versions: ["1.x"]
+
+skills:
+  - name: skill-name
+    entry: skills/path/to/skill
+    description: One-line description
+
+project:
+  structure:
+    - file-or-dir-in-operator-project
+
+requires:
+  tools:
+    - name: tool-name
+      description: What it's used for
+
+depends_on: []</code></pre>
+        </div>
+        <p><strong>Tips:</strong> <code>entry</code> points to a directory, not a file. The directory's <code>README.md</code> is the entry point. <code>description</code> should help an agent decide whether to read the skill.</p>
+
+        <h2 id="research" class="text-2xl font-semibold text-white mt-10">Step 4: Research and Verify</h2>
+        <p>A stack is only as good as its accuracy. Before writing any skill:</p>
+        <ol class="list-decimal list-inside space-y-2">
+            <li>Fetch the target software's official documentation index (<code>/llms.txt</code>, <code>/sitemap.xml</code>, or GitHub source)</li>
+            <li>Copy exact commands from the docs — do not reconstruct from memory</li>
+            <li>Verify YAML field names, CLI flags, and config structure</li>
+            <li>Note version-specific behavior</li>
+            <li>Cross-reference with release notes and GitHub issues</li>
+        </ol>
+
+        <h2 id="content" class="text-2xl font-semibold text-white mt-10">Step 5: Write Skill Content</h2>
+        <p>Optimize for how agents process information:</p>
+        <ul class="list-disc list-inside space-y-2">
+            <li><strong>Imperative headings</strong>: "Install Cilium", "Verify Health" — not "About Cilium Installation"</li>
+            <li><strong>Exact commands</strong>: full copy-pasteable commands with realistic example values</li>
+            <li><strong>Decision trees</strong>: "If X fails -> check Y -> if Y is true -> do Z"</li>
+            <li><strong>Tables for reference</strong>: comparison matrices, port requirements</li>
+            <li><strong>Safety warnings</strong>: explicit callouts before any destructive operation</li>
+            <li><strong>Full YAML/config examples</strong>: valid snippets, not fragments</li>
+        </ul>
+
+        <h3 class="text-lg font-semibold text-white mt-6">Known Issues Pattern</h3>
+        <p>Version-specific bugs get their own files in <code>skills/reference/known-issues/</code>:</p>
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-4 my-4">
+            <pre class="text-sm text-gray-400"><code>### [Short Description]
+
+**Symptom:** What the operator sees
+**Cause:** Why it happens
+**Workaround:** Exact steps to fix it
+**Affected versions:** x.y.z through x.y.w
+**Status:** Open / Fixed in x.y.w</code></pre>
+        </div>
+
+        <h2 id="decisions" class="text-2xl font-semibold text-white mt-10">Step 6: Decision Guides and Compatibility</h2>
+        <p>For stacks where operators must choose between components, provide structured decision aids in <code>skills/reference/decision-guides/</code>:</p>
+        <ul class="list-disc list-inside space-y-1">
+            <li>Comparison tables with features, complexity, and performance</li>
+            <li>Recommendations by use case (production, development, cloud-native)</li>
+            <li>Migration paths — can you change this decision later?</li>
+        </ul>
+        <p>And compatibility matrices in <code>skills/reference/compatibility/</code> mapping which versions of components work together.</p>
+
+        <h2 id="validate" class="text-2xl font-semibold text-white mt-10">Step 7: Validate Your Stack</h2>
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-4 my-4">
+            <pre class="text-sm"><code>agentic-stacks doctor</code></pre>
+        </div>
+        <p>Before publishing, check:</p>
+        <ul class="list-disc list-inside space-y-1">
+            <li>CLAUDE.md has identity, critical rules, routing table, and workflows</li>
+            <li>stack.yaml lists all skills with correct entry paths</li>
+            <li>Every skill directory has a README.md</li>
+            <li>All commands are exact and copy-pasteable</li>
+            <li>No placeholders (TBD, TODO, FIXME) remain</li>
+            <li>Known issues are documented for supported versions</li>
+            <li>The stack has been tested by having an agent use it end-to-end</li>
+        </ul>
+
+        <h2 id="composition" class="text-2xl font-semibold text-white mt-10">Designing for Composition</h2>
+        <p>Operators compose multiple stacks in a single project. To make your stack compose well:</p>
+        <ul class="list-disc list-inside space-y-2">
+            <li><strong>Stay in your domain.</strong> A hardware stack shouldn't reimplement networking concepts that a platform stack covers.</li>
+            <li><strong>Use <code>depends_on</code></strong> to declare stacks that pair well with yours.</li>
+            <li><strong>Avoid conflicting file outputs.</strong> Document what files your stack creates in <code>project.structure</code>.</li>
+            <li><strong>Name skills distinctively.</strong> When an agent loads multiple stacks, skill names should make the domain clear.</li>
+        </ul>
+
+        <h2 class="text-2xl font-semibold text-white mt-10">Reference Implementations</h2>
+        <div class="overflow-x-auto">
+        <table class="w-full text-sm my-4">
+            <thead>
+                <tr class="border-b border-gray-800 text-left text-gray-500">
+                    <th class="pb-2 font-medium">Stack</th>
+                    <th class="pb-2 font-medium">Complexity</th>
+                    <th class="pb-2 font-medium">Pattern</th>
+                </tr>
+            </thead>
+            <tbody class="text-gray-400">
+                <tr class="border-b border-gray-800/50"><td class="py-2 pr-4 whitespace-nowrap"><a href="/stacks/agentic-stacks/openstack-kolla" class="text-emerald-400 hover:underline">openstack-kolla</a></td><td class="pr-4 whitespace-nowrap">Simple</td><td>Flat phase-based (8 skills)</td></tr>
+                <tr class="border-b border-gray-800/50"><td class="py-2 pr-4 whitespace-nowrap"><a href="/stacks/agentic-stacks/kubernetes-talos" class="text-emerald-400 hover:underline">kubernetes-talos</a></td><td class="pr-4 whitespace-nowrap">Comprehensive</td><td>Two-layer phase/domain (20 skills)</td></tr>
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#030712"/>
+  <rect x="460" y="180" width="280" height="50" rx="8" fill="#6ee7b7" opacity="0.3"/>
+  <rect x="500" y="240" width="200" height="50" rx="8" fill="#34d399" opacity="0.5"/>
+  <rect x="540" y="300" width="120" height="50" rx="8" fill="#10b981" opacity="0.8"/>
+  <text x="600" y="430" text-anchor="middle" font-family="system-ui, sans-serif" font-size="48" font-weight="bold" fill="#f9fafb">Agentic Stacks</text>
+  <text x="600" y="475" text-anchor="middle" font-family="system-ui, sans-serif" font-size="22" fill="#9ca3af">Domain expertise for AI agents</text>
+</svg>

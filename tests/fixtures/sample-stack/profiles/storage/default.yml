@@ -1,0 +1,3 @@
+storage:
+  backend: local
+  path: /var/data

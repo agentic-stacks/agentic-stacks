@@ -1,0 +1,14 @@
+.venv/
+.claude/
+.superpowers/
+docs/superpowers/
+docs/brainstorm/
+__pycache__/
+*.pyc
+dist/
+*.egg-info/
+.pytest_cache/
+.coverage
+packages/
+.wrangler/
+*.db

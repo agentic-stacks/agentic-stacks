@@ -1,0 +1,5 @@
+networking:
+  driver: option-a
+  mtu: 1500
+  dns_servers:
+    - 8.8.8.8

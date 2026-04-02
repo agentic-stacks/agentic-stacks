@@ -1,0 +1,3 @@
+security:
+  level: baseline
+  tls_required: true
