@@ -7,8 +7,9 @@ def test_load_valid_manifest(sample_stack_path):
     assert manifest["name"] == "sample-stack"
     assert manifest["namespace"] == "test"
     assert manifest["version"] == "1.0.0"
-    assert len(manifest["skills"]) == 2
-    assert manifest["skills"][0]["name"] == "deploy"
+    assert len(manifest["skills"]) == 3
+    assert manifest["skills"][0]["name"] == "training"
+    assert manifest["skills"][1]["name"] == "deploy"
     assert manifest["profiles"]["categories"] == ["security", "networking", "storage"]
     assert manifest["target"]["versions"] == ["1.0", "2.0"]
 
@@ -75,8 +76,6 @@ def test_manifest_owner_takes_precedence(tmp_path):
 def test_manifest_neither_owner_nor_namespace_fails(tmp_path):
     """Manifest with neither 'owner' nor 'namespace' fails validation."""
     manifest_file = tmp_path / "stack.yaml"
-    manifest_file.write_text(
-        "name: my-stack\nversion: '1.0.0'\ndescription: test\n"
-    )
+    manifest_file.write_text("name: my-stack\nversion: '1.0.0'\ndescription: test\n")
     with pytest.raises(ManifestError, match="owner"):
         load_manifest(manifest_file)
