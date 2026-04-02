@@ -1,6 +1,6 @@
 """Agentic Stacks — thin runtime for composed domain expertise."""
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 from agentic_stacks.manifest import load_manifest, ManifestError
 from agentic_stacks.profiles import (
