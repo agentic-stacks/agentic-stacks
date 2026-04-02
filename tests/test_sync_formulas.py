@@ -34,7 +34,8 @@ def test_manifest_to_formula():
     assert formula["name"] == "test-stack"
     assert formula["owner"] == "test-org"
     assert formula["repository"] == "https://github.com/test-org/test-stack"
-    assert formula["tag"] == "v0.0.1"
+    assert formula["version"] == "0.1.0"
+    assert formula["tag"] == "v0.1.0"
 
     # Skills should not include 'entry' field
     assert "entry" not in formula["skills"][0]

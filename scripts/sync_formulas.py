@@ -46,7 +46,7 @@ def manifest_to_formula(manifest: dict[str, Any]) -> dict[str, Any]:
     """Convert a stack.yaml manifest into a registry formula."""
     owner = manifest.get("owner") or manifest.get("namespace", "")
     name = manifest["name"]
-    version = "0.0.1"
+    version = manifest.get("version", "0.0.1")
 
     # Strip 'entry' from skills — formulas only need name + description
     skills = []
