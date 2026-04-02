@@ -87,4 +87,4 @@ Production runs on Cloudflare Python Workers via ASGI bridge.
 
 ## Testing
 
-pytest. Tests in `tests/`, fixtures in `tests/fixtures/`. Web tests use `FormulaDB` with sample data from `tests/helpers.py`. CI runs on Python 3.12 and 3.13.
+pytest. Tests in `tests/`, fixtures in `tests/fixtures/`. Web tests use `FormulaDB` with sample data from `tests/helpers.py`. CI runs on Python 3.12, 3.13, and 3.14.
