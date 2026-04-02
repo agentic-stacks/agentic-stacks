@@ -27,6 +27,8 @@ def main():
     for f in sorted(stacks_dir.rglob("*.yaml")):
         data = yaml.safe_load(f.read_text())
         if data and "name" in data:
+            if not data.get("skills"):
+                continue
             formulas.append(data)
 
     formulas.sort(key=lambda f: f.get("name", ""))

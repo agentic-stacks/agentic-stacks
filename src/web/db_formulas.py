@@ -9,11 +9,18 @@ class FormulaDB:
     """
 
     def __init__(self, formulas: list[dict]):
-        self._formulas = formulas
+        # Exclude stacks with no skills — they are not ready for the registry
+        self._formulas = [f for f in formulas if f.get("skills")]
 
-    async def list_stacks(self, q: str | None = None, namespace: str | None = None,
-                    target: str | None = None, sort: str = "updated",
-                    page: int = 1, per_page: int = 20) -> tuple[list[dict], int]:
+    async def list_stacks(
+        self,
+        q: str | None = None,
+        namespace: str | None = None,
+        target: str | None = None,
+        sort: str = "updated",
+        page: int = 1,
+        per_page: int = 20,
+    ) -> tuple[list[dict], int]:
         results = list(self._formulas)
 
         if namespace:
@@ -21,23 +28,32 @@ class FormulaDB:
 
         if target:
             t = target.lower()
-            results = [f for f in results
-                       if t in (f.get("target", {}).get("software", "") or "").lower()]
+            results = [
+                f
+                for f in results
+                if t in (f.get("target", {}).get("software", "") or "").lower()
+            ]
 
         if q:
             q_lower = q.lower()
-            results = [f for f in results
-                       if q_lower in f.get("name", "").lower()
-                       or q_lower in f.get("description", "").lower()
-                       or q_lower in (f.get("target", {}).get("software", "") or "").lower()
-                       or any(q_lower in s.get("name", "").lower() or q_lower in s.get("description", "").lower()
-                              for s in f.get("skills", []))]
+            results = [
+                f
+                for f in results
+                if q_lower in f.get("name", "").lower()
+                or q_lower in f.get("description", "").lower()
+                or q_lower in (f.get("target", {}).get("software", "") or "").lower()
+                or any(
+                    q_lower in s.get("name", "").lower()
+                    or q_lower in s.get("description", "").lower()
+                    for s in f.get("skills", [])
+                )
+            ]
 
         results.sort(key=lambda f: f.get("name", ""))
 
         total = len(results)
         start = (page - 1) * per_page
-        page_results = results[start:start + per_page]
+        page_results = results[start : start + per_page]
 
         return [self._to_stack_dict(f) for f in page_results], total
 
@@ -47,7 +63,9 @@ class FormulaDB:
                 return self._to_stack_dict(f)
         return None
 
-    async def get_stack_version(self, namespace: str, name: str, version: str) -> dict | None:
+    async def get_stack_version(
+        self, namespace: str, name: str, version: str
+    ) -> dict | None:
         for f in self._formulas:
             if f.get("owner") == namespace and f.get("name") == name:
                 if f.get("version") == version:
@@ -55,7 +73,11 @@ class FormulaDB:
         return None
 
     async def get_namespace_with_stacks(self, namespace: str) -> dict | None:
-        stacks = [self._to_stack_dict(f) for f in self._formulas if f.get("owner") == namespace]
+        stacks = [
+            self._to_stack_dict(f)
+            for f in self._formulas
+            if f.get("owner") == namespace
+        ]
         if not stacks:
             return None
         return {
@@ -71,12 +93,18 @@ class FormulaDB:
     async def create_stack(self, namespace: str, name: str, description: str) -> dict:
         return {"namespace": namespace, "name": name, "description": description}
 
-    async def create_version(self, namespace: str, name: str, version_data: dict) -> dict:
+    async def create_version(
+        self, namespace: str, name: str, version_data: dict
+    ) -> dict:
         return version_data
 
     async def version_exists(self, namespace: str, name: str, version: str) -> bool:
         for f in self._formulas:
-            if f.get("owner") == namespace and f.get("name") == name and f.get("version") == version:
+            if (
+                f.get("owner") == namespace
+                and f.get("name") == name
+                and f.get("version") == version
+            ):
                 return True
         return False
 
