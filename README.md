@@ -50,10 +50,9 @@ Hit an issue? Ask your agent to document it. Stacks get smarter over time — ev
 |-------|--------|--------|
 | [docker](https://www.agentic-stacks.com/stacks/agentic-stacks/docker) | docker | 21 |
 | [kubernetes-talos](https://www.agentic-stacks.com/stacks/agentic-stacks/kubernetes-talos) | talos-linux | 20 |
+| [openstack-core](https://www.agentic-stacks.com/stacks/agentic-stacks/openstack-core) | openstack | 25 |
 | [openstack-kolla](https://www.agentic-stacks.com/stacks/agentic-stacks/openstack-kolla) | openstack | 8 |
-| [proxmox](https://www.agentic-stacks.com/stacks/agentic-stacks/proxmox) | proxmox | 0 |
 | [ceph](https://www.agentic-stacks.com/stacks/agentic-stacks/ceph) | ceph | 17 |
-| [minio](https://www.agentic-stacks.com/stacks/agentic-stacks/minio) | minio | 0 |
 | [hardware-dell](https://www.agentic-stacks.com/stacks/agentic-stacks/hardware-dell) | Dell PowerEdge | 18 |
 | [hardware-hpe](https://www.agentic-stacks.com/stacks/agentic-stacks/hardware-hpe) | hpe-ilo | 16 |
 | [hardware-supermicro](https://www.agentic-stacks.com/stacks/agentic-stacks/hardware-supermicro) | Supermicro BMC | 17 |
@@ -62,7 +61,6 @@ Hit an issue? Ask your agent to document it. Stacks get smarter over time — ev
 | [ansible](https://www.agentic-stacks.com/stacks/agentic-stacks/ansible) | ansible | 16 |
 | [terraform](https://www.agentic-stacks.com/stacks/agentic-stacks/terraform) | terraform | 16 |
 | [prometheus-grafana](https://www.agentic-stacks.com/stacks/agentic-stacks/prometheus-grafana) | prometheus-grafana | 18 |
-| [linux](https://www.agentic-stacks.com/stacks/agentic-stacks/linux) | linux | 0 |
 | [rails](https://www.agentic-stacks.com/stacks/agentic-stacks/rails) | rails | 20 |
 <!-- STACKS-TABLE-END -->
 
