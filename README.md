@@ -9,7 +9,7 @@ Installable skill packs that give AI agents deep domain expertise. A stack is a 
   <img src="docs/images/i-know-kung-fu.jpg" alt="I know kung fu" width="600">
 </p>
 
-Pull a stack into your project and your AI agent instantly knows how to deploy, manage, troubleshoot, and upgrade the target software. Stacks teach agents *and* humans — amplifying what you can accomplish together.
+Pull a stack into your project and your AI agent instantly knows how to deploy, manage, troubleshoot, and upgrade the target software. Stacks teach agents *and* humans — ask the agent to train you on any domain and it builds an interactive curriculum from the stack's skills.
 
 ## How It Works
 
@@ -36,6 +36,20 @@ agentic-stacks list                  # see what's loaded
 ```
 
 The agent reads all stacks and combines their expertise — hardware provisioning, platform deployment, and everything in between.
+
+### Learn from your stacks
+
+Every stack includes a training skill. Ask the agent to teach you the domain — it builds a curriculum from the stack's skills and walks you through it interactively.
+
+```bash
+# In a project with stacks pulled:
+> train me on this stack
+> train me on RAID management
+> quiz me
+> what should I learn next?
+```
+
+The agent assesses what you already know, sequences topics from foundational to advanced, and adapts as you go. Stacks teach agents *and* humans.
 
 ### Capture learnings as you go
 
@@ -108,6 +122,7 @@ kubernetes-talos/
 ├── CLAUDE.md               # Agent entry point — the expertise guide
 ├── stack.yaml              # Manifest — identity, skills, metadata
 └── skills/                 # Markdown knowledge — teaches the agent
+    ├── training/           # Interactive training mode for learning the domain
     ├── deploy/             # Bootstrap, Networking, Storage
     ├── foundation/         # Concepts, Infrastructure, Machine Config
     ├── operations/         # Backup, Certs, Health Check, Scaling, Upgrades
