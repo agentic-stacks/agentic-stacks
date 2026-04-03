@@ -95,7 +95,7 @@
             <a href="/stacks/{{ namespace }}/{{ stack.name }}/{{ v.version }}" class="text-emerald-400 hover:underline">v{{ v.version }}</a>
             <span class="text-gray-500 text-sm ml-2">{{ v.published_at[:10] if v.published_at else "" }}</span>
         </div>
-        <code class="text-xs text-gray-500">{{ v.digest[:20] }}...</code>
+        {% if v.digest %}<code class="text-xs text-gray-500">{{ v.digest[:20] }}...</code>{% endif %}
     </div>
     {% endfor %}
 </div>
