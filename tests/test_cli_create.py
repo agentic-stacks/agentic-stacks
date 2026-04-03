@@ -12,7 +12,6 @@ def test_create_with_owner_name(tmp_path):
     stack_dir = tmp_path / "my-stack"
     assert (stack_dir / "stack.yaml").exists()
     assert (stack_dir / "skills").is_dir()
-    assert (stack_dir / "skills" / "training" / "README.md").exists()
     assert (stack_dir / "CLAUDE.md").exists()
     assert (stack_dir / "README.md").exists()
 
@@ -24,9 +23,7 @@ def test_create_stack_yaml_uses_owner(tmp_path):
     assert manifest["name"] == "my-stack"
     assert manifest["owner"] == "myorg"
     assert "namespace" not in manifest
-    assert len(manifest["skills"]) == 1
-    assert manifest["skills"][0]["name"] == "training"
-    assert manifest["skills"][0]["entry"] == "skills/training/"
+    assert len(manifest["skills"]) == 0
 
 
 def test_create_infers_path_from_name(tmp_path):
@@ -60,7 +57,6 @@ def test_create_claude_md_has_authoring_guide(tmp_path):
     claude = (tmp_path / "my-stack" / "CLAUDE.md").read_text()
     assert "authoring" in claude.lower()
     assert "Routing Table" in claude
-    assert "training" in claude
 
 
 def test_create_readme(tmp_path):
@@ -78,20 +74,9 @@ def test_create_minimal_scaffold(tmp_path):
     runner.invoke(cli, ["create", "org/s", str(tmp_path / "s")])
     stack_dir = tmp_path / "s"
     assert (stack_dir / "skills").is_dir()
-    assert (stack_dir / "skills" / "training").is_dir()
     assert not (stack_dir / "profiles").exists()
     assert not (stack_dir / "environments").exists()
     assert not (stack_dir / "src").exists()
     assert not (stack_dir / "overrides").exists()
 
 
-def test_create_training_skill_content(tmp_path):
-    """Training skill should contain pedagogical instructions referencing the stack name."""
-    runner = CliRunner()
-    runner.invoke(cli, ["create", "myorg/my-stack", str(tmp_path / "my-stack")])
-    training = (tmp_path / "my-stack" / "skills" / "training" / "README.md").read_text()
-    assert "Training Mode" in training
-    assert "my-stack" in training
-    assert "Assess the learner" in training
-    assert "Build a curriculum" in training
-    assert "Quiz me" in training

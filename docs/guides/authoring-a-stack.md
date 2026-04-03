@@ -357,104 +357,26 @@ Reference these from CLAUDE.md critical rules: "Always check known issues before
 
 ---
 
-## Step 6: Training Skill
+## Step 6: Common Skills
 
-Every stack ships with a **training skill** — a special skill that tells the agent how to teach the stack's domain to new users. When a user says "train me on this stack," the agent reads the training skill and switches from task-execution mode to teaching mode, using all the other skills as source material.
+Every project gets [`common-skills`](https://github.com/agentic-stacks/common-skills) pulled automatically on `agentic-stacks init`. This shared stack provides cross-cutting capabilities that work with any domain stack:
 
-### What It Does
+| Skill | What It Does |
+|-------|-------------|
+| **training** | Interactive teaching mode — assesses the learner, builds a curriculum from your stack's skills, teaches with exercises and quizzes |
+| **guide** | Wizard-style walkthroughs — asks about the user's environment, builds a tailored step-by-step plan from your stack's workflows |
+| **orientation** | Project overview — reads all pulled stacks and summarizes capabilities, suggests starting points |
+| **feedback** | Captures learnings — writes fixes and workarounds to the right place in your domain stack for upstream contribution |
 
-The training skill gives the agent pedagogical instructions:
+These skills use your stack's content as source material. No additional work is needed from stack authors — your skills, workflows, and routing table are what training teaches from, what guide walks through, and what feedback writes to.
 
-- **Assess the learner** — ask what they already know, adjust depth
-- **Build a curriculum** — sequence the stack's skills from foundational to advanced
-- **Teach interactively** — explain concepts, give exercises, ask questions
-- **Adapt** — go deeper on weak areas, skip ahead on strong ones
-- **Track progress** — summarize what's been covered, what remains
+### Opting Out
 
-The agent uses your other skills as the source material. No separate training content is needed — the domain knowledge already exists in your skills.
+Users can skip common-skills with `agentic-stacks init --no-common` or remove it later with `agentic-stacks remove common-skills`.
 
-### New Stacks
+### Custom Training Override
 
-`agentic-stacks create` scaffolds `skills/training/README.md` automatically. The training skill is pre-populated with pedagogical instructions and already listed in `stack.yaml` and the CLAUDE.md routing table.
-
-### Adding to Existing Stacks
-
-If your stack was created before the training skill was introduced, add it manually:
-
-1. Create `skills/training/README.md` with the template below
-2. Add the skill entry to `stack.yaml`:
-   ```yaml
-   skills:
-     - name: training
-       entry: skills/training/
-       description: Interactive training — teaches this stack's domain to new users
-     # ... your other skills
-   ```
-3. Add a routing table entry to `CLAUDE.md`:
-   ```markdown
-   | Learn / Train | training | skills/training/ |
-   ```
-
-**Training skill template** (`skills/training/README.md`):
-
-```markdown
-# Training Mode
-
-When the user asks to be trained on this stack, switch from task-execution
-mode to teaching mode. Use the stack's skills as your source material.
-
-## Getting Started
-
-1. **Assess the learner.** Ask what they already know about [stack-name] and
-   related technologies. Adjust depth accordingly.
-
-2. **Build a curriculum.** Read every skill in this stack. Sequence them
-   from foundational concepts to advanced operations. Present the
-   learning path and let the user adjust it.
-
-3. **Teach concepts before procedures.** For each skill, explain the
-   *why* before the *how*. Use the skill's content as your source
-   material — not generic knowledge.
-
-4. **Make it interactive.** After explaining a concept, give the user
-   a practical task or question. Use real commands and configurations
-   from the skill content. Ask them to predict outcomes before
-   showing answers.
-
-5. **Check understanding.** Ask questions between topics. If the user
-   struggles, go deeper on prerequisites. If they're moving quickly,
-   skip ahead or go deeper on advanced material.
-
-6. **Connect the dots.** Explicitly link concepts across skills.
-   Help the user build a mental model of how everything fits together.
-
-7. **Summarize each section.** Recap key concepts and what the user
-   can now do before moving on.
-
-## Handling Specific Requests
-
-- "Train me on this stack" — start from the beginning with an assessment.
-- "Train me on [topic]" — jump to the relevant skill and teach from there.
-- "Quiz me" — test knowledge on material covered so far.
-- "What should I learn next?" — recommend the next topic based on progress.
-
-## Session Continuity
-
-Track which topics the user has covered in this session. If they want
-to stop and continue later, summarize where they left off and what
-topics remain.
-```
-
-Replace `[stack-name]` with your stack's name.
-
-### Customizing the Training Skill
-
-The default template works well out of the box, but stack authors can customize it:
-
-- **Add prerequisite hints** — "Users should understand Linux networking before the networking module"
-- **Suggest a learning order** — "Start with concepts, then bootstrap, then networking"
-- **Add domain-specific exercises** — "Have the user deploy a single-node cluster before moving to multi-node"
-- **Include assessment questions** — "Ask the user to explain the difference between control plane and worker nodes"
+If your domain needs a specialized training approach, you can add a `skills/training/README.md` to your stack. The domain-specific version takes precedence over the common one since the agent reads your stack's routing table first.
 
 ---
 
@@ -527,7 +449,6 @@ Before publishing your stack:
 
 - [ ] `CLAUDE.md` has identity, critical rules, routing table, and workflows
 - [ ] `stack.yaml` lists all skills with correct entry paths
-- [ ] Training skill exists at `skills/training/README.md`
 - [ ] Every skill directory has a `README.md`
 - [ ] All commands are exact and copy-pasteable
 - [ ] Safety warnings precede every destructive operation

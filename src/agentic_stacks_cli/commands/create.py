@@ -6,57 +6,6 @@ import click
 import yaml
 
 
-def _training_skill(name: str) -> str:
-    """Return the training skill template for a new stack."""
-    return f"""\
-# Training Mode
-
-When the user asks to be trained on this stack, switch from task-execution
-mode to teaching mode. Use the stack's skills as your source material.
-
-## Getting Started
-
-1. **Assess the learner.** Ask what they already know about {name} and
-   related technologies. Adjust depth accordingly.
-
-2. **Build a curriculum.** Read every skill in this stack. Sequence them
-   from foundational concepts to advanced operations. Present the
-   learning path and let the user adjust it.
-
-3. **Teach concepts before procedures.** For each skill, explain the
-   *why* before the *how*. Use the skill's content as your source
-   material — not generic knowledge.
-
-4. **Make it interactive.** After explaining a concept, give the user
-   a practical task or question. Use real commands and configurations
-   from the skill content. Ask them to predict outcomes before
-   showing answers.
-
-5. **Check understanding.** Ask questions between topics. If the user
-   struggles, go deeper on prerequisites. If they're moving quickly,
-   skip ahead or go deeper on advanced material.
-
-6. **Connect the dots.** Explicitly link concepts across skills.
-   Help the user build a mental model of how everything fits together.
-
-7. **Summarize each section.** Recap key concepts and what the user
-   can now do before moving on.
-
-## Handling Specific Requests
-
-- "Train me on this stack" — start from the beginning with an assessment.
-- "Train me on [topic]" — jump to the relevant skill and teach from there.
-- "Quiz me" — test knowledge on material covered so far.
-- "What should I learn next?" — recommend the next topic based on progress.
-
-## Session Continuity
-
-Track which topics the user has covered in this session. If they want
-to stop and continue later, summarize where they left off and what
-topics remain.
-"""
-
-
 def _parse_identity(identity: str) -> tuple[str, str]:
     """Parse 'owner/name' into (owner, name)."""
     if "/" not in identity:
@@ -98,24 +47,13 @@ def create(identity: str, path: str | None):
 
     (stack_dir / "skills").mkdir()
 
-    # Scaffold training skill
-    training_dir = stack_dir / "skills" / "training"
-    training_dir.mkdir(parents=True)
-    training_dir.joinpath("README.md").write_text(_training_skill(name))
-
     manifest = {
         "name": name,
         "owner": owner,
         "version": "0.1.0",
         "description": f"{name} stack",
         "target": {"software": name, "versions": []},
-        "skills": [
-            {
-                "name": "training",
-                "entry": "skills/training/",
-                "description": "Interactive training — teaches this stack's domain to new users",
-            },
-        ],
+        "skills": [],
         "depends_on": [],
         "requires": {"tools": [], "python": ">=3.11"},
     }
@@ -127,8 +65,7 @@ def create(identity: str, path: str | None):
         f"Stack: {owner}/{name}\n\n"
         f"## Routing Table\n\n"
         f"| Need | Skill | Entry |\n"
-        f"|---|---|---|\n"
-        f"| Learn / Train | training | skills/training/ |\n\n"
+        f"|---|---|---|\n\n"
         f"## Authoring Guide\n\n"
         f"Follow the stack authoring guide to build this stack:\n"
         f"https://agentic-stacks.com/docs/authoring\n\n"

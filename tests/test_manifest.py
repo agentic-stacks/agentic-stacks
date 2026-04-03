@@ -7,9 +7,8 @@ def test_load_valid_manifest(sample_stack_path):
     assert manifest["name"] == "sample-stack"
     assert manifest["namespace"] == "test"
     assert manifest["version"] == "1.0.0"
-    assert len(manifest["skills"]) == 3
-    assert manifest["skills"][0]["name"] == "training"
-    assert manifest["skills"][1]["name"] == "deploy"
+    assert len(manifest["skills"]) == 2
+    assert manifest["skills"][0]["name"] == "deploy"
     assert manifest["profiles"]["categories"] == ["security", "networking", "storage"]
     assert manifest["target"]["versions"] == ["1.0", "2.0"]
 

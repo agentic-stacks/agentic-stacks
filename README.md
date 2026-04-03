@@ -39,7 +39,7 @@ The agent reads all stacks and combines their expertise — hardware provisionin
 
 ### Learn from your stacks
 
-Every stack includes a training skill. Ask the agent to teach you the domain — it builds a curriculum from the stack's skills and walks you through it interactively.
+Every project includes [common-skills](https://github.com/agentic-stacks/common-skills) — a shared stack with training, guided walkthroughs, orientation, and feedback capture. Ask the agent to teach you the domain and it builds a curriculum from the stack's skills.
 
 ```bash
 # In a project with stacks pulled:
@@ -123,7 +123,6 @@ kubernetes-talos/
 ├── CLAUDE.md               # Agent entry point — the expertise guide
 ├── stack.yaml              # Manifest — identity, skills, metadata
 └── skills/                 # Markdown knowledge — teaches the agent
-    ├── training/           # Interactive training mode for learning the domain
     ├── deploy/             # Bootstrap, Networking, Storage
     ├── foundation/         # Concepts, Infrastructure, Machine Config
     ├── operations/         # Backup, Certs, Health Check, Scaling, Upgrades
