@@ -75,6 +75,7 @@ Hit an issue? Ask your agent to document it. Stacks get smarter over time — ev
 | [ansible](https://www.agentic-stacks.com/stacks/agentic-stacks/ansible) | ansible | 17 |
 | [terraform](https://www.agentic-stacks.com/stacks/agentic-stacks/terraform) | terraform | 17 |
 | [prometheus-grafana](https://www.agentic-stacks.com/stacks/agentic-stacks/prometheus-grafana) | prometheus-grafana | 19 |
+| [linux](https://www.agentic-stacks.com/stacks/agentic-stacks/linux) | linux | 31 |
 | [rails](https://www.agentic-stacks.com/stacks/agentic-stacks/rails) | rails | 21 |
 <!-- STACKS-TABLE-END -->
 
