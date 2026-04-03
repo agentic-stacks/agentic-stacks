@@ -36,7 +36,7 @@
       "name": "Can stacks teach me, not just the agent?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. Every stack includes a training skill. Ask the agent to train you and it switches to teaching mode — assessing what you know, building a curriculum from the stack's skills, and walking you through it interactively with exercises and quizzes."
+        "text": "Yes. Every project includes common-skills, a shared stack with training, guided walkthroughs, orientation, and feedback capture. Ask the agent to train you and it switches to teaching mode — assessing what you know, building a curriculum from the stack's skills, and walking you through it interactively."
       }
     }
   ]
@@ -171,14 +171,14 @@ agentic-stacks pull ceph</code></pre>
         <details class="group">
             <summary class="cursor-pointer text-white font-medium group-open:text-emerald-400 transition">Can stacks teach me, not just the agent?</summary>
             <div class="mt-3 text-gray-400">
-                <p>Yes. Every stack includes a training skill. Ask the agent "train me on this stack" and it switches from task-execution mode to teaching mode — assessing what you already know, building a curriculum from the stack's skills, and walking you through it interactively with exercises and quizzes.</p>
+                <p>Yes. Every project includes <a href="https://github.com/agentic-stacks/common-skills" class="text-emerald-400 hover:underline">common-skills</a> — a shared stack with training, guided walkthroughs, orientation, and feedback capture. Ask the agent "train me on this stack" and it switches to teaching mode — assessing what you already know, building a curriculum from the pulled stacks' skills, and walking you through it interactively.</p>
                 <div class="bg-gray-900 border border-gray-800 rounded-lg p-3 sm:p-4 my-3 overflow-x-auto">
                     <pre class="text-xs sm:text-sm"><code>> train me on this stack
 > train me on RAID management
 > quiz me
 > what should I learn next?</code></pre>
                 </div>
-                <p>This makes stacks useful for onboarding — a new team member can pull a stack and learn the domain interactively before operating in production.</p>
+                <p>Common-skills is pulled automatically on <code>agentic-stacks init</code>. You can remove it with <code>agentic-stacks remove common-skills</code> or skip it with <code>agentic-stacks init --no-common</code>.</p>
             </div>
         </details>
 

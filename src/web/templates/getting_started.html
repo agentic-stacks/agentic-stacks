@@ -66,7 +66,7 @@ claude
         <p>The agent scans your pulled stacks and lists every skill available — deploy workflows, troubleshooting guides, configuration references, and more. From there, just describe what you need.</p>
 
         <h2 class="text-2xl font-semibold text-white mt-10">Learn from Your Stacks</h2>
-        <p>Every stack includes a training skill. Ask the agent to teach you the domain — it assesses what you already know, builds a curriculum from the stack's skills, and walks you through it interactively.</p>
+        <p>Every project includes <a href="https://github.com/agentic-stacks/common-skills" class="text-emerald-400 hover:underline">common-skills</a> — a shared stack with training, guided walkthroughs, orientation, and feedback capture. Ask the agent to teach you the domain and it builds a curriculum from the pulled stacks' skills.</p>
         <div class="bg-gray-900 border border-gray-800 rounded-lg p-4 my-4">
             <pre class="text-sm"><code># Ask the agent to train you
 > train me on this stack
@@ -74,7 +74,7 @@ claude
 > quiz me
 > what should I learn next?</code></pre>
         </div>
-        <p>The agent adapts depth based on your experience — skipping ahead on topics you know, going deeper on areas where you need more context. Stacks teach agents <em>and</em> humans.</p>
+        <p>Common-skills is pulled automatically on <code>agentic-stacks init</code>. Skip it with <code>--no-common</code> or remove later with <code>agentic-stacks remove common-skills</code>.</p>
 
         <h2 class="text-2xl font-semibold text-white mt-10">CLI Reference</h2>
         <div class="overflow-x-auto">
