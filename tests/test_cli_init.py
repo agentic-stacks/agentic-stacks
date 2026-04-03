@@ -1,9 +1,12 @@
+from unittest.mock import patch
+
 import yaml
 from click.testing import CliRunner
 from agentic_stacks_cli import cli
 
 
-def test_init_creates_project_in_named_dir(tmp_path):
+@patch("agentic_stacks_cli.commands.init._pull_common_skills")
+def test_init_creates_project_in_named_dir(mock_pull, tmp_path):
     runner = CliRunner()
     result = runner.invoke(cli, ["init", str(tmp_path / "my-project")])
     assert result.exit_code == 0, result.output
@@ -13,7 +16,8 @@ def test_init_creates_project_in_named_dir(tmp_path):
     assert (target / ".gitignore").exists()
 
 
-def test_init_current_directory(tmp_path):
+@patch("agentic_stacks_cli.commands.init._pull_common_skills")
+def test_init_current_directory(mock_pull, tmp_path):
     runner = CliRunner()
     with runner.isolated_filesystem(temp_dir=tmp_path):
         result = runner.invoke(cli, ["init"])
@@ -23,14 +27,16 @@ def test_init_current_directory(tmp_path):
         assert (pathlib.Path(".") / "CLAUDE.md").exists()
 
 
-def test_init_empty_stacks_lock(tmp_path):
+@patch("agentic_stacks_cli.commands.init._pull_common_skills")
+def test_init_empty_stacks_lock(mock_pull, tmp_path):
     runner = CliRunner()
     runner.invoke(cli, ["init", str(tmp_path / "proj")])
     lock = yaml.safe_load((tmp_path / "proj" / "stacks.lock").read_text())
     assert lock["stacks"] == []
 
 
-def test_init_claude_md_has_discovery_instructions(tmp_path):
+@patch("agentic_stacks_cli.commands.init._pull_common_skills")
+def test_init_claude_md_has_discovery_instructions(mock_pull, tmp_path):
     runner = CliRunner()
     runner.invoke(cli, ["init", str(tmp_path / "proj")])
     claude = (tmp_path / "proj" / "CLAUDE.md").read_text()
@@ -48,7 +54,8 @@ def test_init_existing_nonempty_directory_fails(tmp_path):
     assert "Already initialized" in result.output
 
 
-def test_init_existing_empty_directory_works(tmp_path):
+@patch("agentic_stacks_cli.commands.init._pull_common_skills")
+def test_init_existing_empty_directory_works(mock_pull, tmp_path):
     target = tmp_path / "empty"
     target.mkdir()
     runner = CliRunner()
@@ -57,8 +64,37 @@ def test_init_existing_empty_directory_works(tmp_path):
     assert (target / "stacks.lock").exists()
 
 
-def test_init_output_suggests_next_steps(tmp_path):
+@patch("agentic_stacks_cli.commands.init._pull_common_skills")
+def test_init_output_suggests_next_steps(mock_pull, tmp_path):
     runner = CliRunner()
     result = runner.invoke(cli, ["init", str(tmp_path / "proj")])
     assert "search" in result.output
     assert "pull" in result.output
+
+
+@patch("agentic_stacks_cli.commands.init._pull_common_skills")
+def test_init_pulls_common_skills(mock_pull, tmp_path):
+    """Verify _pull_common_skills is called by default."""
+    runner = CliRunner()
+    result = runner.invoke(cli, ["init", str(tmp_path / "proj")])
+    assert result.exit_code == 0, result.output
+    mock_pull.assert_called_once()
+
+
+def test_init_no_common_flag(tmp_path):
+    """Verify --no-common skips the common-skills pull."""
+    with patch("agentic_stacks_cli.commands.init._pull_common_skills") as mock_pull:
+        runner = CliRunner()
+        result = runner.invoke(cli, ["init", "--no-common", str(tmp_path / "proj")])
+        assert result.exit_code == 0, result.output
+        mock_pull.assert_not_called()
+
+
+@patch("agentic_stacks_cli.commands.init._pull_common_skills", side_effect=Exception("network error"))
+def test_init_common_skills_failure_non_fatal(mock_pull, tmp_path):
+    """Verify init succeeds even if common-skills pull fails."""
+    runner = CliRunner()
+    result = runner.invoke(cli, ["init", str(tmp_path / "proj")])
+    assert result.exit_code == 0, result.output
+    assert (tmp_path / "proj" / "stacks.lock").exists()
+    assert "Warning" in result.output or "warning" in result.output.lower()

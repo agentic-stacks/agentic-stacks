@@ -1,9 +1,72 @@
 """agentic-stacks init — scaffold an operator project."""
 
 import pathlib
+import subprocess
 
 import click
 import yaml
+
+from agentic_stacks_cli.config import load_config
+from agentic_stacks_cli.lock import read_lock, write_lock, add_to_lock
+from agentic_stacks_cli.registry_repo import ensure_registry, load_formula
+from agentic_stacks_cli.commands.pull import (
+    _parse_ref,
+    _clone_or_pull,
+    _validate_repo_url,
+    GITHUB_BASE,
+)
+
+COMMON_SKILLS_REF = "agentic-stacks/common-skills"
+
+
+def _pull_common_skills(stack_dir: pathlib.Path) -> None:
+    """Pull the common-skills stack into the project."""
+    cfg = load_config()
+    namespace, name = _parse_ref(COMMON_SKILLS_REF)
+
+    # Try to resolve from registry formula
+    repo_url = None
+    formula = None
+    try:
+        registry_path = ensure_registry(
+            repo_url=cfg.get("registry_repo", "https://github.com/agentic-stacks/registry"),
+        )
+        formula = load_formula(registry_path, namespace, name)
+        repo_url = formula["repository"]
+    except (FileNotFoundError, Exception):
+        pass
+
+    # Fall back to GitHub URL convention
+    if not repo_url:
+        repo_url = f"{GITHUB_BASE}/{namespace}/{name}"
+
+    dest = stack_dir / ".stacks" / name
+
+    click.echo(f"Pulling {COMMON_SKILLS_REF}...")
+    _validate_repo_url(repo_url)
+    _clone_or_pull(repo_url, dest)
+    click.echo(f"  → .stacks/{name}/")
+
+    # Record version and commit SHA
+    version = formula.get("version", "latest") if formula else "latest"
+    commit_sha = ""
+    if (dest / ".git").is_dir():
+        result = subprocess.run(
+            ["git", "-C", str(dest), "rev-parse", "HEAD"],
+            capture_output=True, text=True,
+        )
+        if result.returncode == 0:
+            commit_sha = result.stdout.strip()
+
+    lock_path = stack_dir / "stacks.lock"
+    lock = read_lock(lock_path)
+    lock = add_to_lock(lock, name=COMMON_SKILLS_REF, version=version,
+                       digest=commit_sha, registry=repo_url)
+    for entry in lock["stacks"]:
+        if entry["name"] == COMMON_SKILLS_REF:
+            entry["repository"] = repo_url
+    write_lock(lock, lock_path)
+    click.echo(f"  Updated stacks.lock ({version} @ {commit_sha[:7]})")
 
 
 def _init_operator_project(stack_dir: pathlib.Path):
@@ -40,22 +103,25 @@ def _init_operator_project(stack_dir: pathlib.Path):
     (stack_dir / "CLAUDE.md").write_text(claude_md)
 
     click.echo(f"Initialized project at {stack_dir}")
-    click.echo(f"  Run 'agentic-stacks search' to discover stacks.")
-    click.echo(f"  Run 'agentic-stacks pull <name>' to add one.")
 
 
 @click.command()
 @click.argument("path", required=False, default=None, type=click.Path())
-def init(path: str | None):
+@click.option("--no-common", is_flag=True, default=False,
+              help="Skip auto-pulling common-skills stack.")
+def init(path: str | None, no_common: bool):
     """Initialize a project.
 
     Works like git init — run in an existing directory or provide a path
     to create one. Add stacks later with 'agentic-stacks pull'.
 
+    By default, pulls agentic-stacks/common-skills. Use --no-common to skip.
+
     \b
     Examples:
       agentic-stacks init                  # init current directory
       agentic-stacks init my-deployment    # create and init my-deployment/
+      agentic-stacks init --no-common      # init without common-skills
     """
     if path is None:
         stack_dir = pathlib.Path(".")
@@ -70,3 +136,12 @@ def init(path: str | None):
         )
 
     _init_operator_project(stack_dir)
+
+    if not no_common:
+        try:
+            _pull_common_skills(stack_dir)
+        except Exception as e:
+            click.echo(f"  Warning: could not pull common-skills: {e}")
+
+    click.echo(f"  Run 'agentic-stacks search' to discover stacks.")
+    click.echo(f"  Run 'agentic-stacks pull <name>' to add one.")

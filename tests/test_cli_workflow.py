@@ -67,7 +67,8 @@ def _create_fixture_stack(path: pathlib.Path) -> str:
     return f"file://{path}"
 
 
-def test_full_workflow(tmp_path):
+@patch("agentic_stacks_cli.commands.init._pull_common_skills")
+def test_full_workflow(mock_common, tmp_path):
     """init → pull → list → doctor — full project lifecycle."""
     runner = CliRunner()
     stack_repo = tmp_path / "stack-repo"
@@ -159,7 +160,8 @@ def test_doctor_catches_broken_skills(tmp_path):
     assert "skill entry not found" in result.output.lower()
 
 
-def test_init_then_doctor(tmp_path):
+@patch("agentic_stacks_cli.commands.init._pull_common_skills")
+def test_init_then_doctor(mock_common, tmp_path):
     """Doctor on a fresh project with no stacks should work."""
     runner = CliRunner()
     project_dir = tmp_path / "empty-project"
