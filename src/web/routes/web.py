@@ -168,16 +168,38 @@ async def llms_txt(request: Request, db=Depends(get_db)):
     items, _ = await db.list_stacks(per_page=100)
     lines = [
         "# Agentic Stacks",
-        "# Composed domain expertise for AI agents and humans.",
         "",
-        "## Stacks",
+        "Installable skill packs that give AI coding agents deep domain expertise.",
+        "Pull a stack into your project and the agent knows how to deploy, manage,",
+        "troubleshoot, and upgrade the target software.",
+        "",
+        "Works with Claude Code, Codex CLI, Gemini CLI, Cursor, and any agent",
+        "that reads markdown.",
+        "",
+        "## Quick Start",
+        "",
+        "```",
+        "pipx install agentic-stacks",
+        "agentic-stacks init my-project",
+        "cd my-project",
+        "agentic-stacks pull kubernetes-talos",
+        "```",
+        "",
+        "Every project auto-includes common-skills (training, guided walkthroughs,",
+        "orientation, feedback capture). Users can ask:",
+        "- \"train me on this stack\" — interactive learning",
+        "- \"guide me through [task]\" — step-by-step walkthrough",
+        "- \"what can you help me with?\" — project orientation",
+        "",
+        "## Available Stacks",
         "",
     ]
     for s in sorted(items, key=lambda x: x.get("name", "")):
         if s.get("version") is not None:
             name = f"{s['namespace']}/{s['name']}"
-            desc = s.get("description", "").split(".")[0]
-            lines.append(f"- {name}: {desc}")
+            desc = s.get("description", "").strip()
+            url = f"{BASE_URL}/stacks/{s['namespace']}/{s['name']}"
+            lines.append(f"- [{name}]({url}): {desc}")
     lines.extend([
         "",
         "## Links",
@@ -186,6 +208,7 @@ async def llms_txt(request: Request, db=Depends(get_db)):
         f"- Browse: {BASE_URL}/stacks",
         f"- Getting Started: {BASE_URL}/docs/getting-started",
         f"- Authoring Guide: {BASE_URL}/docs/authoring",
+        f"- Common Skills: https://github.com/agentic-stacks/common-skills",
         "- GitHub: https://github.com/agentic-stacks",
     ])
     return PlainTextResponse("\n".join(lines))
