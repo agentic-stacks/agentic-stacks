@@ -128,11 +128,12 @@ async def stack_detail_page(request: Request, namespace: str, name: str, db=Depe
     versions_data = [{"version": v["version"], "digest": v.get("digest", ""),
                        "published_at": v.get("published_at", "")}
                       for v in all_ver]
+    registry_ref = stack_data.get("registry_ref", "")
     return templates.TemplateResponse(request, "stack_detail.html", {
         "namespace": namespace, "stack": stack_obj, "version": version_obj,
         "skills": skills, "profiles": profiles, "depends_on": depends_on,
         "deprecations": deprecations, "deprecated_skills": deprecated_skills,
-        "all_versions": versions_data,
+        "all_versions": versions_data, "registry_ref": registry_ref,
     })
 
 
@@ -155,11 +156,12 @@ async def stack_version_page(request: Request, namespace: str, name: str, versio
     versions_data = [{"version": v["version"], "digest": v.get("digest", ""),
                        "published_at": v.get("published_at", "")}
                       for v in all_ver]
+    registry_ref = ver_data.get("registry_ref", "")
     return templates.TemplateResponse(request, "stack_detail.html", {
         "namespace": namespace, "stack": stack_obj, "version": version_obj,
         "skills": skills, "profiles": profiles, "depends_on": depends_on,
         "deprecations": deprecations, "deprecated_skills": deprecated_skills,
-        "all_versions": versions_data,
+        "all_versions": versions_data, "registry_ref": registry_ref,
     })
 
 
