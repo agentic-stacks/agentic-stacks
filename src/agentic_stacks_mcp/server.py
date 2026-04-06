@@ -7,6 +7,7 @@ from mcp.server.fastmcp import FastMCP
 
 from agentic_stacks_cli.config import load_config
 from agentic_stacks_cli.registry_repo import ensure_registry, load_formula, search_formulas
+from agentic_stacks_mcp.compose import compose_guidance_handler
 
 mcp = FastMCP("agentic-stacks")
 
@@ -182,6 +183,27 @@ async def pull_stack(name: str, version: str, path: str = ".") -> str:
         )
     except Exception as e:
         return f"Error pulling stack: {e}"
+
+
+@mcp.tool()
+async def compose_guidance(task: str, path: str = ".") -> str:
+    """Get synthesized guidance for a task across all pulled stacks.
+
+    Scans every stack in the project, finds skills relevant to the task,
+    and returns a combined briefing with content previews and entry points.
+    Use this when an operator asks a question that might span multiple domains
+    (e.g., "upgrade Kubernetes on Dell hardware").
+
+    Args:
+        task: What the operator wants to do (e.g., "deploy", "upgrade",
+              "troubleshoot networking", "rotate certificates").
+        path: Project directory containing stacks.lock. Defaults to ".".
+
+    Returns a briefing with matched skills from each stack, routing table
+    excerpts, and content previews.
+    """
+    result = await compose_guidance_handler(task, path)
+    return result["summary"]
 
 
 def main():
