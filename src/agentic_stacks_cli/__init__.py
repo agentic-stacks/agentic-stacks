@@ -13,6 +13,8 @@ from agentic_stacks_cli.commands.create import create
 from agentic_stacks_cli.commands.list import list_stacks
 from agentic_stacks_cli.commands.remove import remove
 from agentic_stacks_cli.commands.update import update
+from agentic_stacks_cli.commands.lint import lint
+from agentic_stacks_cli.commands.explain import explain
 
 
 @click.group()
@@ -32,6 +34,8 @@ cli.add_command(search)
 cli.add_command(list_stacks)
 cli.add_command(remove)
 cli.add_command(update)
+cli.add_command(lint)
+cli.add_command(explain)
 
 
 def main():
