@@ -234,6 +234,26 @@ def test_lint_common_skills_rules(tmp_path):
     runner = CliRunner()
     result = runner.invoke(cli, ["lint", "--path", str(project)])
     assert result.exit_code == 0
+    assert "common-skills" in result.output
+
+
+def test_lint_without_common_skills(tmp_path):
+    """Lint works fine without common-skills, falls back to built-in defaults."""
+    project = tmp_path / "project"
+    project.mkdir()
+
+    stack = project / ".stacks" / "my-stack"
+    _create_stack(stack)
+
+    lock = {"stacks": [
+        {"name": "testorg/my-stack", "version": "1.0.0", "digest": "", "registry": ""},
+    ]}
+    (project / "stacks.lock").write_text(yaml.dump(lock))
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["lint", "--path", str(project)])
+    assert result.exit_code == 0
+    assert "built-in defaults" in result.output
 
 
 def test_lint_no_manifest(tmp_path):
