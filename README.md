@@ -77,6 +77,7 @@ Hit an issue? Ask your agent to document it. Stacks get smarter over time — ev
 | [prometheus-grafana](https://www.agentic-stacks.com/stacks/agentic-stacks/prometheus-grafana) | prometheus-grafana | 18 |
 | [common-skills](https://www.agentic-stacks.com/stacks/agentic-stacks/common-skills) | agentic-stacks | 4 |
 | [linux](https://www.agentic-stacks.com/stacks/agentic-stacks/linux) | linux | 31 |
+| [postgresql](https://www.agentic-stacks.com/stacks/agentic-stacks/postgresql) | postgresql | 20 |
 | [rails](https://www.agentic-stacks.com/stacks/agentic-stacks/rails) | rails | 20 |
 <!-- STACKS-TABLE-END -->
 
