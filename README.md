@@ -62,23 +62,23 @@ Hit an issue? Ask your agent to document it. Stacks get smarter over time — ev
 <!-- STACKS-TABLE-START -->
 | Stack | Target | Skills |
 |-------|--------|--------|
-| [docker](https://agentic-stacks.com/stacks/agentic-stacks/docker) | docker | 21 |
-| [kubernetes-talos](https://agentic-stacks.com/stacks/agentic-stacks/kubernetes-talos) | talos-linux | 20 |
-| [openstack-core](https://agentic-stacks.com/stacks/agentic-stacks/openstack-core) | openstack | 25 |
-| [openstack-kolla](https://agentic-stacks.com/stacks/agentic-stacks/openstack-kolla) | openstack | 8 |
-| [ceph](https://agentic-stacks.com/stacks/agentic-stacks/ceph) | ceph | 17 |
-| [hardware-dell](https://agentic-stacks.com/stacks/agentic-stacks/hardware-dell) | Dell PowerEdge | 18 |
-| [hardware-hpe](https://agentic-stacks.com/stacks/agentic-stacks/hardware-hpe) | hpe-ilo | 16 |
-| [hardware-supermicro](https://agentic-stacks.com/stacks/agentic-stacks/hardware-supermicro) | Supermicro BMC | 17 |
-| [frr](https://agentic-stacks.com/stacks/agentic-stacks/frr) | frr | 35 |
-| [ipxe](https://agentic-stacks.com/stacks/agentic-stacks/ipxe) | ipxe | 20 |
-| [ansible](https://agentic-stacks.com/stacks/agentic-stacks/ansible) | ansible | 16 |
-| [terraform](https://agentic-stacks.com/stacks/agentic-stacks/terraform) | terraform | 16 |
-| [prometheus-grafana](https://agentic-stacks.com/stacks/agentic-stacks/prometheus-grafana) | prometheus-grafana | 18 |
-| [common-skills](https://agentic-stacks.com/stacks/agentic-stacks/common-skills) | agentic-stacks | 4 |
-| [linux](https://agentic-stacks.com/stacks/agentic-stacks/linux) | linux | 31 |
-| [postgresql](https://agentic-stacks.com/stacks/agentic-stacks/postgresql) | postgresql | 20 |
-| [rails](https://agentic-stacks.com/stacks/agentic-stacks/rails) | rails | 20 |
+| [docker](https://www.agentic-stacks.com/stacks/agentic-stacks/docker) | docker | 21 |
+| [kubernetes-talos](https://www.agentic-stacks.com/stacks/agentic-stacks/kubernetes-talos) | talos-linux | 20 |
+| [openstack-core](https://www.agentic-stacks.com/stacks/agentic-stacks/openstack-core) | openstack | 25 |
+| [openstack-kolla](https://www.agentic-stacks.com/stacks/agentic-stacks/openstack-kolla) | openstack | 8 |
+| [ceph](https://www.agentic-stacks.com/stacks/agentic-stacks/ceph) | ceph | 17 |
+| [hardware-dell](https://www.agentic-stacks.com/stacks/agentic-stacks/hardware-dell) | Dell PowerEdge | 18 |
+| [hardware-hpe](https://www.agentic-stacks.com/stacks/agentic-stacks/hardware-hpe) | hpe-ilo | 16 |
+| [hardware-supermicro](https://www.agentic-stacks.com/stacks/agentic-stacks/hardware-supermicro) | Supermicro BMC | 17 |
+| [frr](https://www.agentic-stacks.com/stacks/agentic-stacks/frr) | frr | 35 |
+| [ipxe](https://www.agentic-stacks.com/stacks/agentic-stacks/ipxe) | ipxe | 20 |
+| [ansible](https://www.agentic-stacks.com/stacks/agentic-stacks/ansible) | ansible | 16 |
+| [terraform](https://www.agentic-stacks.com/stacks/agentic-stacks/terraform) | terraform | 16 |
+| [prometheus-grafana](https://www.agentic-stacks.com/stacks/agentic-stacks/prometheus-grafana) | prometheus-grafana | 18 |
+| [common-skills](https://www.agentic-stacks.com/stacks/agentic-stacks/common-skills) | agentic-stacks | 4 |
+| [linux](https://www.agentic-stacks.com/stacks/agentic-stacks/linux) | linux | 31 |
+| [postgresql](https://www.agentic-stacks.com/stacks/agentic-stacks/postgresql) | postgresql | 20 |
+| [rails](https://www.agentic-stacks.com/stacks/agentic-stacks/rails) | rails | 20 |
 <!-- STACKS-TABLE-END -->
 
 Browse all stacks at [agentic-stacks.com/stacks](https://agentic-stacks.com/stacks).
