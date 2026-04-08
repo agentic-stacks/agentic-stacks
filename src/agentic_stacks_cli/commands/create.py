@@ -50,7 +50,6 @@ def create(identity: str, path: str | None):
     manifest = {
         "name": name,
         "owner": owner,
-        "version": "0.1.0",
         "description": f"{name} stack",
         "target": {"software": name, "versions": []},
         "skills": [],

@@ -23,7 +23,9 @@ def list_stacks(target_dir: str):
     stacks_dir = target / ".stacks"
     for entry in stacks:
         name = entry["name"]
+        version = entry.get("version", "")
         short_name = name.split("/")[-1]
         pulled = (stacks_dir / short_name / ".git").is_dir()
         status = "pulled" if pulled else "not pulled"
-        click.echo(f"  {name}  ({status})")
+        version_str = f"@{version}" if version else ""
+        click.echo(f"  {name}{version_str}  ({status})")
