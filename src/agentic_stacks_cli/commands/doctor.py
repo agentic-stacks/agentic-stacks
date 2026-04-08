@@ -39,7 +39,7 @@ def doctor(path: str):
 
     try:
         manifest = load_manifest(manifest_path)
-        click.echo(f"  manifest: {manifest['full_name']}@{manifest['version']}")
+        click.echo(f"  manifest: {manifest['full_name']}@{manifest.get('version', 'latest')}")
     except ManifestError as e:
         raise click.ClickException(f"Invalid manifest: {e}")
 
@@ -76,7 +76,7 @@ def _doctor_project(stack_dir, warnings):
             try:
                 manifest = load_manifest(manifest_path)
                 skill_count = len(manifest.get("skills", []))
-                click.echo(f"    manifest: {manifest['full_name']}@{manifest['version']}")
+                click.echo(f"    manifest: {manifest['full_name']}@{manifest.get('version', 'latest')}")
                 click.echo(f"    skills: {skill_count}")
                 # Check skill entries resolve
                 for skill in manifest.get("skills", []):
